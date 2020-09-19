@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import telebot
 
 from config.settings import TG_BOT
-from bot_init.service import registration_subscriber
+from bot_init.service import registration_subscriber, get_tbot_instance
 from bot_init.utils import save_message
 
 
@@ -30,5 +30,5 @@ def bot(request):
 def start_handler(message):
     """Обработчик команды /start"""
     save_message(message)
-    registration_subscriber(message.chat.id)
-    ...
+    answer = registration_subscriber(message.chat.id, message.text)
+    answer.send(chat_id=message.chat.id)
