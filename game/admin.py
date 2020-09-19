@@ -7,6 +7,8 @@ from game.models import MembersGroup
 @admin.register(MembersGroup)
 class MembersGroupAdmin(admin.ModelAdmin):
     list_display = ('title', 'get_link')
+    fields = ('title', 'get_link')
+    readonly_fields = ('get_link',)
 
     def get_link(self, obj):
         return f'https://t.me/{settings.TG_BOT.name}?start=1'
