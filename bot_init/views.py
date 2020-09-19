@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import telebot
 
 from config.settings import TG_BOT
-from bot_init.service import registration_subscriber, get_tbot_instance
+from bot_init.service import registration_subscriber, get_tbot_instance, text_message_service
 from bot_init.utils import save_message
 
 
@@ -32,3 +32,11 @@ def start_handler(message):
     save_message(message)
     answer = registration_subscriber(message.chat.id, message.text)
     answer.send(chat_id=message.chat.id)
+
+
+@tbot.message_handler(content_types=['text'])
+def text_handler(message):
+    save_message(message)
+    answer = text_message_service(message.chat.id, message.text)
+    answer.send(chat_id=message.chat.id)
+

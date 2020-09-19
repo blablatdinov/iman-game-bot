@@ -33,3 +33,20 @@ def update_webhook(host=f'{settings.TG_BOT.webhook_host}/{settings.TG_BOT.token}
     tbot.remove_webhook()
     sleep(1)
     web = tbot.set_webhook(host)
+
+
+def get_subscriber_by_chat_id(chat_id: int):
+    try:
+        subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
+        return subscriber
+    except Subscriber.DoesNotExist:
+        pass  # TODO что будем делать в этом случае
+
+
+def text_message_service(chat_id: int, text: str):
+    if True:
+        subscriber = get_subscriber_by_chat_id(chat_id)
+        group = subscriber.members_group
+        group_points = sum([subscriber.points for subscriber in group.subscribers.all()])
+        text = f'Баллов у группы: {group_points}\nБаллов у вас: {subscriber.points}'
+        return Answer(text)
