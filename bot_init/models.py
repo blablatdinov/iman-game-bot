@@ -1,4 +1,5 @@
 from django.db import models
+from game.models import MembersGroup
 
 
 class Subscriber(models.Model):
@@ -6,6 +7,8 @@ class Subscriber(models.Model):
     tg_chat_id = models.IntegerField(verbose_name="Идентификатор подписчика")
     is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
     comment = models.TextField(null=True)
+    members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
+    points = models.SmallIntegerField(verbose_name="Кол-во очков у участника")
 
     def __str__(self):
         str(self.tg_chat_id)
