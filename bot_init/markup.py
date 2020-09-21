@@ -70,3 +70,10 @@ class Keyboard:
         """ Метод для получения кнопок """
         button = types.KeyboardButton(button_text)
         return button
+
+
+def get_default_keyboard():
+    buttons = [
+        (('📈Статистика'),)
+    ]
+    return Keyboard(buttons).keyboard

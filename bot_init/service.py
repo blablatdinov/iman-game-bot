@@ -5,6 +5,7 @@ from telebot import TeleBot
 
 from bot_init.models import Subscriber
 from bot_init.schemas import Answer
+from bot_init.markup import get_default_keyboard
 from game.models import MembersGroup
 
 
@@ -20,7 +21,7 @@ def registration_subscriber(chat_id: int, text: str):
     except ValueError:
         return Answer("Получите ссылку-приглашение для вашей команды")
     subscriber, created = Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
-    return Answer("Добро пожаловать!")
+    return Answer("Добро пожаловать!", keyboard=get_default_keyboard())
 
 
 def get_tbot_instance():
@@ -44,9 +45,9 @@ def get_subscriber_by_chat_id(chat_id: int):
 
 
 def text_message_service(chat_id: int, text: str):
-    if True:
+    if text == '📈Статистика':
         subscriber = get_subscriber_by_chat_id(chat_id)
         group = subscriber.members_group
         group_points = sum([subscriber.points for subscriber in group.subscribers.all()])
         text = f'Баллов у группы: {group_points}\nБаллов у вас: {subscriber.points}'
-        return Answer(text)
+        return Answer(text, keyboard=get_default_keyboard())
