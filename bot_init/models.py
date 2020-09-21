@@ -8,7 +8,6 @@ class Subscriber(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
     comment = models.TextField(blank=True, null=True)
     members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
-    points = models.SmallIntegerField(verbose_name="Кол-во очков у участника", default=0)
 
     def __str__(self):
         return str(self.tg_chat_id)

@@ -1,10 +1,14 @@
+from bot_init.markup import get_default_keyboard
+
+
 class Answer:
     text = str
-    keyboard = None
+    keyboard = get_default_keyboard()
 
     def __init__(self, text, keyboard=None):
         self.text = text
-        self.keyboard = keyboard
+        if keyboard is not None:
+            self.keyboard = keyboard
 
     def send(self, chat_id: int):
         from bot_init.service import get_tbot_instance
