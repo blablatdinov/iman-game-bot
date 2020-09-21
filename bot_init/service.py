@@ -1,7 +1,10 @@
 import re
+import pytz
+import datetime
 from time import sleep
 
 from django.conf import settings
+from django.utils import timezone
 from telebot import TeleBot
 
 from bot_init.models import Subscriber
@@ -70,6 +73,22 @@ def get_group_statistic_by_chat_id(chat_id: int) -> int:
     return group_points
 
 
+def allow_time_for_write_points():
+    now = timezone.now()
+    print(f'{now.hour + 3=}')
+    return 21 <= now.hour + 3 <= 24
+
+
+def check_points_count_for_today(chat_id):
+    subscriber = get_subscriber_by_chat_id(chat_id)
+    now = timezone.now()
+    today_date = datetime.datetime(now.year, now.month, now.day)
+    tomorrow_date = datetime.datetime(now.year, now.month, now.day + datetime.timedelta(days=1))
+    points_records = PointsRecord.objects.filter(
+        subscriber=subscriber,
+        date_time__range=(today_date, tomorrow_date)
+    )
+
 def text_message_service(chat_id: int, text: str):
     if text == '📈Статистика':
         subscriber_points = get_subscriber_statistic_by_chat_id(chat_id)
@@ -77,7 +96,14 @@ def text_message_service(chat_id: int, text: str):
         text = f'Баллов у группы: {group_points}\nБаллов у вас: {subscriber_points}'
         return Answer(text, keyboard=get_default_keyboard())
     elif regexp_result := re.search(r'\d+', text):
-        if not True: # TODO проверка по времени от 20 до 24 часов, единственная запись в день
-            return
+        if not allow_time_for_write_points() and check_points_count_for_today(chat_id): # TODO проверка по времени от 20 до 24 часов, единственная запись в день
+            return Answer(f'Очки можно присылать с 20 до 24 часов')
         write_points(chat_id, regexp_result.group(0))
         return Answer(f'Засчитано {text} очков')
+
+
+def ask_about_today_points():
+    answer = Answer('Введите сколько очков вы набрали сегодня')
+    for subscriber in Subscriber.objects.filter(is_active=True):
+        answer.send(subscriber.tg_chat_id)
+
