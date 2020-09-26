@@ -29,3 +29,17 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
+
+
+class AdminMessage(models.Model):
+    """Административные сообщения"""
+    title = models.CharField(max_length=128, verbose_name='Навзвание')
+    text = models.TextField(verbose_name='Текст сообщения')
+    key = models.CharField(max_length=128, verbose_name='Ключ, по которому сообщение вызывается в коде')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Админитративное сообщение'
+        verbose_name_plural = 'Админитративное сообщения'
