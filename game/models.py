@@ -53,3 +53,7 @@ class RecordDailyTask(models.Model):
     def switch(self):
         self.is_selected = True
         self.save()
+
+    def set_done(self):
+        self.is_done = True
+        self.save()

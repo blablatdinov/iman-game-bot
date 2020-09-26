@@ -11,7 +11,7 @@ from bot_init.models import Subscriber
 from bot_init.schemas import Answer
 from bot_init.markup import get_default_keyboard
 from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
-from game.service import translate_tasks_in_keyboard, get_text
+from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
 
 
 def get_primary_key_from_start_message(text: str) -> int:
@@ -120,5 +120,19 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         tasks = record_daily_task_group.daily_tasks_records.all()
         keyboard = translate_tasks_in_keyboard(tasks)
         text = get_text([x.task for x in record_daily_task_group.daily_tasks_records.all()])
+        return Answer(text, keyboard=keyboard, chat_id=chat_id)
+    elif "set_to_done" in text:
+        args = eval(re.search(r'\(.+\)', text).group(0))
+        task_id = args[0]
+        task_status = args[1]
+        next_tasks_list = args[2]
+        if task_status:
+            task = RecordDailyTask.objects.get(pk=task_id)
+            task.set_done()
+        if len(next_tasks_list) == 0:
+            get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)
+            Answer('Отлично, отчет готов', keyboard=get_default_keyboard(), chat_id=chat_id).send()
+            return
+        text, keyboard = ask_single_task(next_tasks_list)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
     print('\n' * 3)

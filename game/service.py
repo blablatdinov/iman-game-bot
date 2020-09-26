@@ -54,20 +54,30 @@ def send_daily_tasks():
         keyboard = translate_tasks_in_keyboard(record_daily_tasks)
         subscriber.up_day()
         Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
-        
 
+
+def ask_single_task(tasks_list):
+    # tasks_id_list = tasks_list[1:]
+    task_record = RecordDailyTask.objects.get(pk=tasks_list[0])
+    tasks_id_list = tasks_list[1:]
+    text = task_record.task.text
+    buttons = [
+        (
+            ('Да', f'set_to_done({task_record.pk},True,{tasks_id_list})'),
+            ('Нет', f'set_to_done({task_record.pk},False,{tasks_id_list})')
+        )
+    ]
+    return text, InlineKeyboard(buttons).keyboard
+
+        
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
     for subscriber in Subscriber.objects.filter(is_active=True):
         today = timezone.now().date()
-        tasks = RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
         text = "Время заполнить отчет по заданиям, которые ты выбрал:\n\n"
-        buttons = []
-        for index, record_task in enumerate(tasks):
-            task = record_task.task
-            text += f"{index + 1}) {task.text}"
-            buttons += [
-                (('Да', f'set_to_done({record_task.pk})'),('Нет', f'set_to_done({record_task.pk})'))
-            ]
-        keyboard = InlineKeyboard(buttons).keyboard
-        Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
+        tasks = [
+            x.pk for x in
+            RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
+        ]
+        task_text, keyboard = ask_single_task(tasks)
+        Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()

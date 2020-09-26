@@ -8,6 +8,7 @@ import telebot
 from config.settings import TG_BOT
 from bot_init.service import registration_subscriber, get_tbot_instance, text_message_service, handle_query_service
 from bot_init.utils import save_message
+from bot_init.schemas import Answer
 
 
 token = TG_BOT.token
@@ -53,6 +54,6 @@ def handle_query(call):
         message_text=call.message.text,
         call_id=call.id
     )
-    answer.edit(call.message.message_id)
-    # if isinstance(answer, Answer) or isinstance(answer, list):
-    #     send_answer(answer, call.from_user.id)
+    if isinstance(answer, Answer) or isinstance(answer, list):
+        answer.edit(call.message.message_id)
+        # send_answer(answer, call.from_user.id)
