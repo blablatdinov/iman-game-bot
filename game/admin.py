@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from game.models import MembersGroup
+from game.models import MembersGroup, DailyTask, RecordDailyTask
 
 
 @admin.register(MembersGroup)
@@ -15,3 +15,13 @@ class MembersGroupAdmin(admin.ModelAdmin):
 
     get_link.short_description = 'Ссылка'
 
+
+@admin.register(DailyTask)
+class DailyTaskAdmin(admin.ModelAdmin):
+    list_display = ('task_type', 'text')
+
+
+@admin.register(RecordDailyTask)
+class RecordDailyTaskAdmin(admin.ModelAdmin):
+    ...
+    # list_display = ('task_type', 'text')

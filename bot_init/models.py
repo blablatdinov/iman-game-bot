@@ -8,6 +8,11 @@ class Subscriber(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
     comment = models.TextField(blank=True, null=True)
     members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
+    day = models.IntegerField(default=1)
+
+    def up_day(self):
+        self.day += 1
+        self.save()
 
     def __str__(self):
         return str(self.tg_chat_id)
@@ -29,3 +34,17 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
+
+
+class AdminMessage(models.Model):
+    """Административные сообщения"""
+    title = models.CharField(max_length=128, verbose_name='Навзвание')
+    text = models.TextField(verbose_name='Текст сообщения')
+    key = models.CharField(max_length=128, verbose_name='Ключ, по которому сообщение вызывается в коде')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Админитративное сообщение'
+        verbose_name_plural = 'Админитративное сообщения'
