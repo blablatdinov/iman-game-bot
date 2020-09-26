@@ -10,7 +10,8 @@ from telebot import TeleBot
 from bot_init.models import Subscriber
 from bot_init.schemas import Answer
 from bot_init.markup import get_default_keyboard
-from game.models import MembersGroup, PointsRecord
+from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
+from game.service import translate_tasks_in_keyboard, get_text
 
 
 def get_primary_key_from_start_message(text: str) -> int:
@@ -107,3 +108,17 @@ def ask_about_today_points():
     for subscriber in Subscriber.objects.filter(is_active=True):
         answer.send(subscriber.tg_chat_id)
 
+
+def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
+    print('\n' * 3)
+    print(f'{text=}')
+    if "set_to_selected" in text:
+        record_daily_task_id = int(re.search(r'\d+', text).group(0))
+        record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
+        record_daily_task.switch()
+        record_daily_task_group = record_daily_task.group
+        tasks = record_daily_task_group.daily_tasks_records.all()
+        keyboard = translate_tasks_in_keyboard(tasks)
+        text = get_text([x.task for x in record_daily_task_group.daily_tasks_records.all()])
+        return Answer(text, keyboard=keyboard, chat_id=chat_id)
+    print('\n' * 3)

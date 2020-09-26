@@ -8,6 +8,11 @@ class Subscriber(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
     comment = models.TextField(blank=True, null=True)
     members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
+    day = models.IntegerField(default=1)
+
+    def up_day(self):
+        self.day += 1
+        self.save()
 
     def __str__(self):
         return str(self.tg_chat_id)
