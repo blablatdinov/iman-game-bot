@@ -102,3 +102,8 @@ try:
     TG_BOT.id = r['result']['id']
 except ConnectionError:
     pass
+
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASKS_SERIALIZER = 'json'
