@@ -122,10 +122,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         text = get_text([x.task for x in record_daily_task_group.daily_tasks_records.all()])
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
     elif "set_to_done" in text:
-        args = eval(re.search(r'\(.+\)', text).group(0))
-        task_id = args[0]
-        task_status = args[1]
-        next_tasks_list = args[2]
+        task_id, task_status, next_tasks_list = eval(re.search(r'\(.+\)', text).group(0))
         if task_status:
             task = RecordDailyTask.objects.get(pk=task_id)
             task.set_done()
