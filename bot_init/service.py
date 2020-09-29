@@ -111,8 +111,6 @@ def ask_about_today_points():
 
 
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
-    print('\n' * 3)
-    print(f'{text=}')
     if "set_to_selected" in text:
         record_daily_task_id = int(re.search(r'\d+', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
@@ -133,4 +131,3 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             return
         text, keyboard = ask_single_task(next_tasks_list)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
-    print('\n' * 3)
