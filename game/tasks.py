@@ -6,10 +6,10 @@ from game.service import send_daily_tasks, ask_about_task
 
 
 @periodic_task(run_every=(crontab(hour=7, minute=0)), name='send_daily_tasks')
-def send_daily_tasks():
+def celery_send_daily_tasks():
     send_daily_tasks()
 
 
 @periodic_task(run_every=(crontab(hour=7, minute=0)), name='ask_about_task')
-def ask_about_task():
+def celery_ask_about_task():
     ask_about_task()
