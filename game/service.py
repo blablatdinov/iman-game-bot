@@ -95,6 +95,8 @@ def ask_about_task():
             x.pk for x in
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
         ]
+        if len(tasks) < 1:
+            continue
         task_text, keyboard = ask_single_task(tasks)
         print('ask func')
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
