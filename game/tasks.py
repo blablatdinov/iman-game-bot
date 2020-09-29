@@ -15,6 +15,6 @@ def celery_ask_about_task():
     ask_about_task()
 
 
-@periodic_task(run_every=(crontab(hour=24, minute=0)), name='clean_asks')
+@periodic_task(run_every=(crontab(hour=0, minute=0)), name='clean_asks')
 def celery_clean_ask():
     clean_ask()
