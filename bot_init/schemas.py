@@ -24,6 +24,7 @@ class Answer:
         try:
             if self.keyboard:
                 message = tbot.send_message(chat_id=chat_id, text=self.text, reply_markup=self.keyboard, parse_mode="HTML")
+                save_message(message)
                 return
             message = tbot.send_message(chat_id=chat_id, text=self.text, parse_mode="HTML")
             save_message(message)

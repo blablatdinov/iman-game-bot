@@ -126,8 +126,12 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             task = RecordDailyTask.objects.get(pk=task_id)
             task.set_done()
         if len(next_tasks_list) == 0:
-            get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)
+            tg_delete_message(chat_id=chat_id, message_id=message_id)
             Answer('Отлично, отчет готов', keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return
         text, keyboard = ask_single_task(next_tasks_list)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
+
+
+def tg_delete_message(chat_id, message_id):
+    get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)

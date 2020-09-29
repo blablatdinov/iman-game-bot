@@ -1,4 +1,5 @@
 from django.db import models
+
 from game.models import MembersGroup
 
 
@@ -30,6 +31,13 @@ class Message(models.Model):
     chat_id = models.IntegerField(verbose_name="Идентификатор чата, в котором идет общение")
     text = models.TextField(null=True, verbose_name="Текст сообщения")
     json = models.TextField()
+    is_removed = models.BooleanField(default=False, verbose_name="Удалено ли сообщение у пользователя")
+
+    def tg_delete(self):
+        from bot_init.service import tg_delete_message
+        tg_delete_message(self.chat_id, self.message_id)
+        self.is_removed = True
+        self.save()
 
     class Meta:
         verbose_name = "Сообщение"

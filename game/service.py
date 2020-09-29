@@ -2,7 +2,7 @@ from random import choice
 
 from django.utils import timezone
 
-from bot_init.models import Subscriber
+from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
 from game.schemas import DAILY_TASK_TYPE
@@ -65,7 +65,7 @@ def send_daily_tasks():
     for subscriber in Subscriber.objects.filter(is_active=True):
         tasks = get_random_tasks()
         text = get_text(tasks)
-        
+
         record_daily_tasks = create_daily_task_records(subscriber, tasks)
         keyboard = translate_tasks_in_keyboard(record_daily_tasks)
         subscriber.up_day()
@@ -96,4 +96,19 @@ def ask_about_task():
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
         ]
         task_text, keyboard = ask_single_task(tasks)
+        print('ask func')
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
+
+
+def clean_ask():
+    """
+    Если пользователь не успел заполнить отчет, то сообщения с приглашением 
+    заполнить отчет удаляются
+    
+    """
+    queryset = Message.objects.filter(is_removed=False, text__contains="Время заполнить отчет по заданиям, которые ты выбрал")
+    for message in queryset:
+        try:
+            message.tg_delete()
+        except Exception as e:
+            print(e)
