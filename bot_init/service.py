@@ -77,18 +77,19 @@ def get_group_statistic_by_chat_id(chat_id: int) -> int:
 def allow_time_for_write_points():
     now = timezone.now()
     print(f'{now.hour + 3=}')
-    return 21 <= now.hour + 3 <= 24
+    return 20 <= now.hour + 3 <= 24
 
 
 def check_points_count_for_today(chat_id):
     subscriber = get_subscriber_by_chat_id(chat_id)
     now = timezone.now()
     today_date = datetime.datetime(now.year, now.month, now.day)
-    tomorrow_date = datetime.datetime(now.year, now.month, now.day + datetime.timedelta(days=1))
+    tomorrow_date = datetime.datetime(now.year, now.month, now.day + 1)
     points_records = PointsRecord.objects.filter(
         subscriber=subscriber,
-        date_time__range=(today_date, tomorrow_date)
+        date__range=(today_date, tomorrow_date)
     )
+    return points_records.count()
 
 def text_message_service(chat_id: int, text: str):
     if text == '📈Статистика':
