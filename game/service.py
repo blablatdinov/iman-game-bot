@@ -1,3 +1,5 @@
+from random import choice
+
 from django.utils import timezone
 
 from bot_init.models import Subscriber
@@ -7,12 +9,25 @@ from game.schemas import DAILY_TASK_TYPE
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup
 
 
+TASKS_TYPES = tuple([x[0] for x in DAILY_TASK_TYPE])
+
+
 def get_tasks(day: int):
     """Функция возвращает список заданий для пользователя"""
-    tasks_types = [x[0] for x in DAILY_TASK_TYPE]
     tasks = []
-    for task_type in tasks_types:
-        queryset = DailyTask.objects.filter(task_type=task_type).order_by("pk")[:3]
+    for task_type in TASKS_TYPES:
+        offset = day * 3  # TODO продумать механизм остатка, т. к. заданий ограниченное кол-во
+        queryset = DailyTask.objects.filter(task_type=task_type).order_by("pk")
+        queryset = queryset[offset:offset + 3]
+        tasks += list(queryset)
+    return tasks
+
+
+def get_random_tasks():
+    print('random')
+    tasks = []
+    for task_type in TASKS_TYPES:
+        queryset = DailyTask.objects.filter(task_type=task_type).order_by("?")[:3]
         tasks += list(queryset)
     return tasks
 
@@ -48,8 +63,9 @@ def get_text(tasks):
 def send_daily_tasks():
     """Функция рассылает задания для пользователей в кнопках"""
     for subscriber in Subscriber.objects.filter(is_active=True):
-        tasks = get_tasks(subscriber.day)
+        tasks = get_random_tasks()
         text = get_text(tasks)
+        
         record_daily_tasks = create_daily_task_records(subscriber, tasks)
         keyboard = translate_tasks_in_keyboard(record_daily_tasks)
         subscriber.up_day()
