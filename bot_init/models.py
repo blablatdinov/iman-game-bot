@@ -10,6 +10,7 @@ class Subscriber(models.Model):
     comment = models.TextField(blank=True, null=True)
     members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
     day = models.IntegerField(default=1)
+    level = models.IntegerField(default=1)
 
     def up_day(self):
         self.day += 1

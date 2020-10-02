@@ -64,8 +64,8 @@ def send_daily_tasks():
     """Функция рассылает задания для пользователей в кнопках"""
     for subscriber in Subscriber.objects.filter(is_active=True):
         tasks = get_random_tasks()
-        text = get_text(tasks)
-
+        text = f"Сегодня вам нужно выбрать {NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE[subscriber.level]} заданий"
+        text += get_text(tasks)
         record_daily_tasks = create_daily_task_records(subscriber, tasks)
         keyboard = translate_tasks_in_keyboard(record_daily_tasks)
         subscriber.up_day()
