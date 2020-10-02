@@ -90,7 +90,8 @@ def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
     for subscriber in Subscriber.objects.filter(is_active=True):
         today = timezone.now().date()
-        text = "Время заполнить отчет по заданиям, которые ты выбрал:\n\n"
+        text = "И снова, Ас-саляму ‘алейкум, брат! Как прошел день? Что из запланированного получилось сделать? " \
+               "Поделись со мной и я внесу твой результат в наш отчет. "
         tasks = [
             x.pk for x in
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
@@ -98,7 +99,6 @@ def ask_about_task():
         if len(tasks) < 1:
             continue
         task_text, keyboard = ask_single_task(tasks)
-        print('ask func')
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
 
 
