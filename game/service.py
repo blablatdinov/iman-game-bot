@@ -5,7 +5,7 @@ from django.utils import timezone
 from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
-from game.schemas import DAILY_TASK_TYPE
+from game.schemas import DAILY_TASK_TYPE, NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup
 
 
