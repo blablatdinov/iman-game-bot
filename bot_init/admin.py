@@ -9,4 +9,7 @@ admin.site.register(Subscriber)
 
 @admin.register(AdminMessage)
 class AdminMessageAdmin(admin.ModelAdmin):
-    ...
+    
+    def save_model(self, request, obj, form, change):
+        obj.key = obj.key.lower().replace(' ', '_')
+        obj.save()
