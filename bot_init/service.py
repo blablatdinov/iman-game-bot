@@ -16,6 +16,9 @@ from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
 from game.services.survey import get_next_question
 
 
+logger.add(f"{settings.BASE_DIR}/logs/app.log")
+
+
 def get_primary_key_from_start_message(text: str) -> int:
     return int(text[7:])
 
@@ -113,7 +116,7 @@ def ask_about_today_points():
 
 
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
-    logger.info(text)
+    logger.info(f"{chat_id=} {text}")
     if "set_to_selected" in text:
         record_daily_task_id = int(re.search(r'\d+', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
