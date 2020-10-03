@@ -2,13 +2,18 @@ from time import sleep
 
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 import telebot
+from loguru import logger
 
 from config.settings import TG_BOT
 from bot_init.service import registration_subscriber, get_tbot_instance, text_message_service, handle_query_service
 from bot_init.utils import save_message
 from bot_init.schemas import Answer
+
+
+logger.add(f"{settings.BASE_DIR}/logs/app.log")
 
 
 token = TG_BOT.token
@@ -20,6 +25,7 @@ def bot(request):
     """Обработчик пакетов от телеграмма"""
     if request.content_type == 'application/json':
         json_data = request.body.decode('utf-8')
+        logger.info(json_data)
         update = telebot.types.Update.de_json(json_data)
         tbot.process_new_updates([update])
         return HttpResponse('')
