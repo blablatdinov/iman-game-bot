@@ -59,7 +59,7 @@ class RecordDailyTask(models.Model):
         self.save()
 
 
-class BeginSurveyAnswer(models.Model):
+class BeginSurveyQuestion(models.Model):
     """Вопросы для начального тестирования"""
     type = models.CharField(max_length=16, choices=DAILY_TASK_TYPE, verbose_name="Категория вопроса")
     text = models.CharField(max_length=1000, verbose_name="Текст вопроса")

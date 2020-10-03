@@ -6,12 +6,14 @@ from time import sleep
 from django.conf import settings
 from django.utils import timezone
 from telebot import TeleBot
+from loguru import logger
 
 from bot_init.models import Subscriber
 from bot_init.schemas import Answer
 from bot_init.markup import get_default_keyboard
 from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
+from game.services.survey import get_next_question
 
 
 def get_primary_key_from_start_message(text: str) -> int:
@@ -111,6 +113,7 @@ def ask_about_today_points():
 
 
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
+    logger.info(text)
     if "set_to_selected" in text:
         record_daily_task_id = int(re.search(r'\d+', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
@@ -131,6 +134,11 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             return
         text, keyboard = ask_single_task(next_tasks_list)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
+    elif "begin_survey" in text:
+        value, begin_question_pk = eval(re.search(r'\(.+\)', text).group(0))
+        answer = get_next_question(begin_question_pk)
+        answer.chat_id = chat_id
+        return answer
 
 
 def tg_delete_message(chat_id, message_id):

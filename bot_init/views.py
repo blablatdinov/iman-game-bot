@@ -46,7 +46,6 @@ def text_handler(message):
 def handle_query(call):
     """Обравботка нажатий на инлайн кнопку"""
     # save_callback_data(call)
-    print(dir(call))
     answer = handle_query_service(
         chat_id=call.from_user.id,
         text=call.data,
