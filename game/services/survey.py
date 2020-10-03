@@ -1,4 +1,5 @@
 """Начальный опрос подписчика"""
+from bot_init.models import Subscriber
 from game.models import BeginSurveyQuestion
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
@@ -34,6 +35,24 @@ def start_survey():
     keyboard = get_keyboard_for_question(survey_question.pk)
     answer = Answer(survey_question.text, keyboard=keyboard)
     answer.send(358610865)
+
+
+def set_points(chat_id, question_pk, value):
+    subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
+    print(f"{subscriber=}")
+    survey_question = BeginSurveyQuestion.objects.get(pk=question_pk)
+    print(f"{survey_question=}")
+    question_type = survey_question.type
+    print(f"{question_type=}")
+    if question_type == 'body':
+        subscriber.points_body += value
+        subscriber.save()
+    elif question_type == 'soul':
+        subscriber.points_soul += value
+        subscriber.save()
+    elif question_type == 'spirit':
+        subscriber.points_spirit += value
+        subscriber.save()
 
 
 def get_next_question(question_pk):

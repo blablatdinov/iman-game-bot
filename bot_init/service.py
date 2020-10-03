@@ -13,7 +13,7 @@ from bot_init.schemas import Answer
 from bot_init.markup import get_default_keyboard
 from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
-from game.services.survey import get_next_question
+from game.services.survey import get_next_question, set_points
 
 
 logger.add(f"{settings.BASE_DIR}/logs/app.log")
@@ -140,6 +140,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     elif "begin_survey" in text:
         value, begin_question_pk = eval(re.search(r'\(.+\)', text).group(0))
         answer = get_next_question(begin_question_pk)
+        set_points(chat_id, begin_question_pk, value)
         answer.chat_id = chat_id
         return answer
 
