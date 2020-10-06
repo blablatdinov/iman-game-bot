@@ -5,6 +5,9 @@
 .AppleDouble
 .LSOverride
 
+# idea files
+.idea/
+
 # Icon must end with two \r
 Icon
 
