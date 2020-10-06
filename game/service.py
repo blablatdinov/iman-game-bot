@@ -1,11 +1,12 @@
 from random import choice
+from datetime import datetime
 
 from django.utils import timezone
 
 from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
-from game.schemas import DAILY_TASK_TYPE, NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE
+from game.schemas import DAILY_TASK_TYPE, NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE, WEEK_DAYS
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup
 
 
@@ -60,15 +61,22 @@ def get_text(tasks):
     return text
 
 
+def get_week_day():
+    # week_day_indexes = [6, 0, 1, 2, 3, 4, 5]
+    return WEEK_DAYS[datetime.today().weekday()][0]
+
+
 def send_daily_tasks():
     """Функция рассылает задания для пользователей в кнопках"""
+    week_day = get_week_day()
+    print(week_day)
+    tasks = DailyTask.objects.filter(week_day=week_day)
+    print(tasks)
+    text = ""
+    text += get_text(tasks)
     for subscriber in Subscriber.objects.filter(is_active=True):
-        tasks = get_random_tasks()
-        text = f"Сегодня вам нужно выбрать {NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE[subscriber.level]} заданий"
-        text += get_text(tasks)
         record_daily_tasks = create_daily_task_records(subscriber, tasks)
         keyboard = translate_tasks_in_keyboard(record_daily_tasks)
-        subscriber.up_day()
         Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
 
 
