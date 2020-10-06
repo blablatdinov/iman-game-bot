@@ -7,13 +7,14 @@ from django.conf import settings
 from django.utils import timezone
 from telebot import TeleBot
 from loguru import logger
+from telebot import types
 
-from bot_init.models import Subscriber
+from bot_init.models import Subscriber, AdminMessage
 from bot_init.schemas import Answer
-from bot_init.markup import get_default_keyboard
+from bot_init.markup import get_default_keyboard, InlineKeyboard
 from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
-from game.services.survey import get_next_question, set_points
+from game.services.survey import get_next_question, set_points, start_survey
 
 
 logger.add(f"{settings.BASE_DIR}/logs/app.log")
@@ -21,6 +22,13 @@ logger.add(f"{settings.BASE_DIR}/logs/app.log")
 
 def get_primary_key_from_start_message(text: str) -> int:
     return int(text[7:])
+
+
+def get_acquaintance_next_keyboard(step_num):
+    buttons = [
+        (('Вперед', f'acquaintance({step_num})'),)
+    ]
+    return InlineKeyboard(buttons).keyboard
 
 
 def registration_subscriber(chat_id: int, text: str):
@@ -31,7 +39,9 @@ def registration_subscriber(chat_id: int, text: str):
     except ValueError:
         return Answer("Получите ссылку-приглашение для вашей команды")
     subscriber, created = Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
-    return Answer("Добро пожаловать!", keyboard=get_default_keyboard())
+    text = AdminMessage.objects.get(key='start').text
+    keyboard = get_acquaintance_next_keyboard(1)
+    return Answer(text, keyboard=keyboard)
 
 
 def get_tbot_instance():
@@ -139,10 +149,32 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
     elif "begin_survey" in text:
         value, begin_question_pk = eval(re.search(r'\(.+\)', text).group(0))
-        answer = get_next_question(begin_question_pk)
         set_points(chat_id, begin_question_pk, value)
+        if begin_question_pk == 30:
+            print(1)
+            admin_message = AdminMessage.objects.get(pk=3)
+            text = admin_message.text
+            keyboard = get_acquaintance_next_keyboard(3)
+            return Answer(text, keyboard=keyboard, chat_id=chat_id)
         answer.chat_id = chat_id
+        answer = get_next_question(begin_question_pk)
         return answer
+    elif "acquaintance" in text:
+        step_num = int(re.search(r'\d+', text).group(0))
+        print('\n' * 3)
+        print(step_num)
+        if step_num == 5:
+            admin_message = AdminMessage.objects.get(pk=step_num+1)
+            Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
+            return 
+        elif step_num == 2:
+            answer = start_survey(chat_id)
+            return answer
+        admin_message = AdminMessage.objects.get(pk=step_num+1)
+        text = admin_message.text
+        keyboard = get_acquaintance_next_keyboard(step_num + 1)
+        print('\n' * 3)
+        return Answer(text, keyboard=keyboard, chat_id=chat_id)
 
 
 def tg_delete_message(chat_id, message_id):

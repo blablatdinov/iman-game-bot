@@ -1,6 +1,6 @@
 from django.db import models
 
-from game.schemas import DAILY_TASK_TYPE
+from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
 # from bot_init.models import Subscriber
 
 
@@ -24,6 +24,7 @@ class DailyTask(models.Model):
     """Задания, приходящие с утра на выполнение"""
     task_type = models.CharField(max_length=16, choices=DAILY_TASK_TYPE)
     text = models.TextField()
+    week_day = models.CharField(max_length=5, choices=WEEK_DAYS)
 
     def __str__(self):
         return self.text

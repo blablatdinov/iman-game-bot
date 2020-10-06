@@ -29,12 +29,12 @@ def get_keyboard_for_question(question_pk):
     return keyboard
 
 
-def start_survey():
+def start_survey(chat_id):
     """Функция начинает опрос"""
     survey_question = BeginSurveyQuestion.objects.filter(type="body")[0]
     keyboard = get_keyboard_for_question(survey_question.pk)
-    answer = Answer(survey_question.text, keyboard=keyboard)
-    answer.send(358610865)
+    answer = Answer(survey_question.text, keyboard=keyboard, chat_id=chat_id)
+    return answer
 
 
 def set_points(chat_id, question_pk, value):

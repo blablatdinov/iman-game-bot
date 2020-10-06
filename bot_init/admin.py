@@ -9,6 +9,7 @@ admin.site.register(Subscriber)
 
 @admin.register(AdminMessage)
 class AdminMessageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'key')
     
     def save_model(self, request, obj, form, change):
         obj.key = obj.key.lower().replace(' ', '_')

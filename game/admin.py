@@ -18,7 +18,7 @@ class MembersGroupAdmin(admin.ModelAdmin):
 
 @admin.register(DailyTask)
 class DailyTaskAdmin(admin.ModelAdmin):
-    list_display = ('task_type', 'text')
+    list_display = ('task_type', 'text', 'week_day')
 
 
 @admin.register(RecordDailyTask)
