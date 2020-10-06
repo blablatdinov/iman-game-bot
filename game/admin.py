@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.conf import settings
 
-from game.models import MembersGroup, DailyTask, RecordDailyTask
+from game.models import MembersGroup, DailyTask, RecordDailyTask, BeginSurveyQuestion
+
+
+@admin.register(BeginSurveyQuestion)
+class BeginSurveyQuestionAdmin(admin.ModelAdmin):
+    list_display = ("type", "text")
 
 
 @admin.register(MembersGroup)

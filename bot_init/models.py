@@ -10,6 +10,7 @@ class Subscriber(models.Model):
     comment = models.TextField(blank=True, null=True)
     members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
     day = models.IntegerField(default=1)
+    step = models.CharField(max_length=1000)
     points_body = models.IntegerField(default=0, verbose_name="Уровень физ. развития")
     points_soul = models.IntegerField(default=0, verbose_name="Уровень духовного развития")
     points_spirit = models.IntegerField(default=0, verbose_name="Уровень душевного развития")
