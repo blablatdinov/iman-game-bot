@@ -37,7 +37,8 @@ def translate_tasks_in_keyboard(tasks: tuple):
     for index, task in enumerate(tasks):
         selected_or_no = "⛏️" if task.is_selected else ""
         buttons.append(
-            ((f"{selected_or_no}{index + 1}|{task.pk}", f"set_to_selected({task.pk})"),)
+            #((f"{selected_or_no}{index + 1}|{task.pk}", f"set_to_selected({task.pk})"),)
+            ((f"{selected_or_no}{index + 1}", f"set_to_selected({task.pk})"),)
         )
     keyboard = InlineKeyboard(buttons).keyboard
     return keyboard
