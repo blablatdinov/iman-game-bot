@@ -40,27 +40,36 @@ def selected_or_no(task_pk, level):
 
 def translate_tasks_in_keyboard(tasks: tuple):
     """Преобразование тупла с заданиями в инлайн клавиатуру"""
+    task_type = tasks[0].task.task_type
+    task_group_pk = tasks[0].group.pk
     buttons = []
     for index, task in enumerate(tasks):
-        # selected_or_no = "⛏️" if task.is_selected else ""
         buttons.append(
             (
-                (f"{selected_or_no(task.pk, 1)}{index + 1}) Уровень: 1", f"set_to_selected({task.pk},{1})"),
-                (f"{selected_or_no(task.pk, 2)}{index + 1}) Уровень: 2", f"set_to_selected({task.pk},{2})"),
-                (f"{selected_or_no(task.pk, 3)}{index + 1}) Уровень: 3", f"set_to_selected({task.pk},{3})"),
+                (f"{selected_or_no(task.pk, 1)} 1", f"set_to_selected({task.pk},{1})"),
+                (f"{selected_or_no(task.pk, 2)} 2", f"set_to_selected({task.pk},{2})"),
+                (f"{selected_or_no(task.pk, 3)} 3", f"set_to_selected({task.pk},{3})"),
             )
+        )
+    if task_type == "body":
+        buttons.append((("Душа", f"get_task_keyboard('soul', {task_group_pk})"),))
+    elif task_type == "soul":
+        buttons.append(
+            (("Тело", f"get_task_keyboard('body', {task_group_pk})"), ("Дух", f"get_task_keyboard('spirit', {task_group_pk})"),)
+        )
+    elif task_type == "spirit":
+        buttons.append(
+            (("Душа", f"get_task_keyboard('soul', {task_group_pk})"),)
         )
     keyboard = InlineKeyboard(buttons).keyboard
     return keyboard
 
 
 def create_daily_task_records(subscriber: Subscriber, tasks):
-    result = []
     group = RecordDailyTaskGroup.objects.create()
     for task in tasks:
         r = RecordDailyTask.objects.create(subscriber=subscriber, task=task, group=group)
-        result.append(r)
-    return result
+    return group
 
 
 def get_text(tasks):
@@ -75,14 +84,18 @@ def get_week_day():
 
 
 def send_daily_tasks():
-    """Функция рассылает задания для пользователей в кнопках"""
+    """
+    Функция рассылает задания для пользователей в кнопках.
+    Происходит отправка заданий категории body с клавиатурой для переключения на другие категории
+
+    """
     week_day = get_week_day()
     tasks = DailyTask.objects.filter(week_day=week_day)
-    text = ""
-    text += get_text(tasks)
+    text = get_text(tasks.filter(task_type="body"))
     for subscriber in Subscriber.objects.filter(is_active=True):
-        record_daily_tasks = create_daily_task_records(subscriber, tasks)
-        keyboard = translate_tasks_in_keyboard(record_daily_tasks)
+        group = create_daily_task_records(subscriber, tasks)
+        body_tasks = group.daily_tasks_records.filter(task__task_type="body")
+        keyboard = translate_tasks_in_keyboard(body_tasks)
         Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
 
 

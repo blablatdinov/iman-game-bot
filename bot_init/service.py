@@ -1,5 +1,4 @@
 import re
-import pytz
 import datetime
 from time import sleep
 
@@ -7,7 +6,6 @@ from django.conf import settings
 from django.utils import timezone
 from telebot import TeleBot
 from loguru import logger
-from telebot import types
 
 from bot_init.models import Subscriber, AdminMessage
 from bot_init.schemas import Answer
@@ -130,17 +128,18 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     logger.info(f"{chat_id=} {text}")
     if "set_to_selected" in text:
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
-        logger.debug(record_daily_task_id)
-        logger.debug(level)
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
+        record_task_group = record_daily_task.group
+        task_type = record_daily_task.task.task_type
         record_daily_task.switch()
         record_daily_task.complexity = level
         record_daily_task.save()
-        record_daily_task_group = record_daily_task.group
-        tasks = record_daily_task_group.daily_tasks_records.all()
-        keyboard = translate_tasks_in_keyboard(tasks)
-        text = get_text([x.task for x in record_daily_task_group.daily_tasks_records.all()])
-        return Answer(text, keyboard=keyboard, chat_id=chat_id)
+        tasks = record_task_group.daily_tasks_records.filter(task__task_type=task_type)
+        text = f"{tasks[0].task.get_task_type_display()}\n\n" \
+               f"1) {tasks[0].task.text}\n" \
+               f"2) {tasks[1].task.text}\n" \
+               f"3) {tasks[2].task.text}\n"
+        return Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
     elif "set_to_done" in text:
         task_id, task_status, next_tasks_list = eval(re.search(r'\(.+\)', text).group(0))
         if task_status:
@@ -179,6 +178,19 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         text = admin_message.text
         keyboard = get_acquaintance_next_keyboard(step_num + 1)
         Answer(text, keyboard=keyboard, chat_id=chat_id).send()
+    elif "get_task_keyboard" in text:
+        task_type, group_pk = eval(re.search(r'\(.+\)', text).group(0))
+        task_group = RecordDailyTaskGroup.objects.get(pk=group_pk)
+        tasks = [
+            x for x in
+            task_group.daily_tasks_records.filter(task__task_type=task_type)
+        ]
+        text = f"{tasks[0].task.get_task_type_display()}\n\n" \
+               f"1) {tasks[0].task.text}\n" \
+               f"2) {tasks[1].task.text}\n" \
+               f"3) {tasks[2].task.text}\n"
+        answer = Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
+        return answer
 
 
 def tg_delete_message(chat_id, message_id):
