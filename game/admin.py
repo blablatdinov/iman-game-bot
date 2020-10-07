@@ -28,5 +28,14 @@ class DailyTaskAdmin(admin.ModelAdmin):
 
 @admin.register(RecordDailyTask)
 class RecordDailyTaskAdmin(admin.ModelAdmin):
-    ...
-    # list_display = ('task_type', 'text')
+    list_display = (
+        "subscriber",
+        "task",
+        "is_done",
+        "date",
+        "complexity",
+    )
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(is_selected=True)
+
