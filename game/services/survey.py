@@ -39,11 +39,8 @@ def start_survey(chat_id):
 
 def set_points(chat_id, question_pk, value):
     subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
-    print(f"{subscriber=}")
     survey_question = BeginSurveyQuestion.objects.get(pk=question_pk)
-    print(f"{survey_question=}")
     question_type = survey_question.type
-    print(f"{question_type=}")
     if question_type == 'body':
         subscriber.points_body += value
         subscriber.save()
@@ -59,6 +56,6 @@ def get_next_question(question_pk):
     """Возвращает следующий вопрос с клавиатурой"""
     survey_question = BeginSurveyQuestion.objects.get(pk=question_pk + 1)
     keyboard = get_keyboard_for_question(survey_question.pk)
-    answer = Answer(survey_question.text, keyboard=keyboard)
+    text = f"{survey_question.get_type_display()}\n\n{survey_question.text}"
+    answer = Answer(text, keyboard=keyboard)
     return answer
-    

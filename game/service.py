@@ -1,4 +1,3 @@
-from random import choice
 from datetime import datetime
 
 from django.utils import timezone
@@ -6,7 +5,7 @@ from django.utils import timezone
 from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
-from game.schemas import DAILY_TASK_TYPE, NUMBER_OF_TASKS_REQUIRED_TO_COMPLETE, WEEK_DAYS
+from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup
 
 
@@ -25,7 +24,6 @@ def get_tasks(day: int):
 
 
 def get_random_tasks():
-    print('random')
     tasks = []
     for task_type in TASKS_TYPES:
         queryset = DailyTask.objects.filter(task_type=task_type).order_by("?")[:3]
@@ -62,16 +60,13 @@ def get_text(tasks):
 
 
 def get_week_day():
-    # week_day_indexes = [6, 0, 1, 2, 3, 4, 5]
     return WEEK_DAYS[datetime.today().weekday()][0]
 
 
 def send_daily_tasks():
     """Функция рассылает задания для пользователей в кнопках"""
     week_day = get_week_day()
-    print(week_day)
     tasks = DailyTask.objects.filter(week_day=week_day)
-    print(tasks)
     text = ""
     text += get_text(tasks)
     for subscriber in Subscriber.objects.filter(is_active=True):
@@ -81,7 +76,6 @@ def send_daily_tasks():
 
 
 def ask_single_task(tasks_list):
-    # tasks_id_list = tasks_list[1:]
     task_record = RecordDailyTask.objects.get(pk=tasks_list[0])
     tasks_id_list = tasks_list[1:]
     text = task_record.task.text
@@ -116,7 +110,9 @@ def clean_ask():
     заполнить отчет удаляются
     
     """
-    queryset = Message.objects.filter(is_removed=False, text__contains="Время заполнить отчет по заданиям, которые ты выбрал")
+    queryset = Message.objects.filter(
+        is_removed=False, text__contains="Время заполнить отчет по заданиям, которые ты выбрал"
+    )
     for message in queryset:
         try:
             message.tg_delete()

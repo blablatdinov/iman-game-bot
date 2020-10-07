@@ -113,11 +113,6 @@ def text_message_service(chat_id: int, text: str):
         group_points = get_group_statistic_by_chat_id(chat_id)
         text = f'Баллов у группы: {group_points}\nБаллов у вас: {subscriber_points}'
         return Answer(text, keyboard=get_default_keyboard())
-    # elif regexp_result := re.search(r'\d+', text):
-    #     if not allow_time_for_write_points() and check_points_count_for_today(chat_id): # TODO проверка по времени от 20 до 24 часов, единственная запись в день
-    #         return Answer(f'Очки можно присылать с 20 до 24 часов')
-    #     write_points(chat_id, regexp_result.group(0))
-    #     return Answer(f'Засчитано {text} очков')
     elif Subscriber.objects.get(tg_chat_id=chat_id).step == "ask_sub_purpose":
         admin_message = AdminMessage.objects.get(pk=4)
         text = admin_message.text
@@ -169,8 +164,6 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         return answer
     elif "acquaintance" in text:
         step_num = int(re.search(r'\d+', text).group(0))
-        print('\n' * 3)
-        print(step_num)
         if step_num == 5:
             admin_message = AdminMessage.objects.get(pk=step_num+1)
             Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
@@ -181,8 +174,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         admin_message = AdminMessage.objects.get(pk=step_num+1)
         text = admin_message.text
         keyboard = get_acquaintance_next_keyboard(step_num + 1)
-        print('\n' * 3)
-        return Answer(text, keyboard=keyboard, chat_id=chat_id)
+        Answer(text, keyboard=keyboard, chat_id=chat_id).send()
 
 
 def tg_delete_message(chat_id, message_id):
