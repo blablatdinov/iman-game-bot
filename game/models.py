@@ -49,6 +49,7 @@ class RecordDailyTask(models.Model):
     is_selected = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
     date = models.DateField(auto_now_add=True)
+    complexity = models.IntegerField(default=0, verbose_name="Сложность, которую выбрал пользователь")
     group = models.ForeignKey(RecordDailyTaskGroup, on_delete=models.CASCADE, related_name="daily_tasks_records")
 
     def switch(self):

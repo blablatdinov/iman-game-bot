@@ -129,9 +129,13 @@ def ask_about_today_points():
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
     logger.info(f"{chat_id=} {text}")
     if "set_to_selected" in text:
-        record_daily_task_id = int(re.search(r'\d+', text).group(0))
+        record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
+        logger.debug(record_daily_task_id)
+        logger.debug(level)
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_daily_task.switch()
+        record_daily_task.complexity = level
+        record_daily_task.save()
         record_daily_task_group = record_daily_task.group
         tasks = record_daily_task_group.daily_tasks_records.all()
         keyboard = translate_tasks_in_keyboard(tasks)

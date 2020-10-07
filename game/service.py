@@ -31,14 +31,24 @@ def get_random_tasks():
     return tasks
 
 
+def selected_or_no(task_pk, level):
+    record_daily_task = RecordDailyTask.objects.get(pk=task_pk)
+    if record_daily_task.complexity == level:
+        return "⛏️"
+    return ""
+
+
 def translate_tasks_in_keyboard(tasks: tuple):
     """Преобразование тупла с заданиями в инлайн клавиатуру"""
     buttons = []
     for index, task in enumerate(tasks):
-        selected_or_no = "⛏️" if task.is_selected else ""
+        # selected_or_no = "⛏️" if task.is_selected else ""
         buttons.append(
-            #((f"{selected_or_no}{index + 1}|{task.pk}", f"set_to_selected({task.pk})"),)
-            ((f"{selected_or_no}{index + 1}", f"set_to_selected({task.pk})"),)
+            (
+                (f"{selected_or_no(task.pk, 1)}{index + 1}) Уровень: 1", f"set_to_selected({task.pk},{1})"),
+                (f"{selected_or_no(task.pk, 2)}{index + 1}) Уровень: 2", f"set_to_selected({task.pk},{2})"),
+                (f"{selected_or_no(task.pk, 3)}{index + 1}) Уровень: 3", f"set_to_selected({task.pk},{3})"),
+            )
         )
     keyboard = InlineKeyboard(buttons).keyboard
     return keyboard
