@@ -33,7 +33,8 @@ def start_survey(chat_id):
     """Функция начинает опрос"""
     survey_question = BeginSurveyQuestion.objects.filter(type="body")[0]
     keyboard = get_keyboard_for_question(survey_question.pk)
-    answer = Answer(survey_question.text, keyboard=keyboard, chat_id=chat_id)
+    text = f"{survey_question.get_type_display()}\n\n{survey_question.text}"
+    answer = Answer(text, keyboard=keyboard, chat_id=chat_id)
     return answer
 
 
