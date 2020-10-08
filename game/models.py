@@ -53,7 +53,7 @@ class RecordDailyTask(models.Model):
     group = models.ForeignKey(RecordDailyTaskGroup, on_delete=models.CASCADE, related_name="daily_tasks_records")
 
     def switch(self):
-        self.is_selected = True
+        self.is_selected = not self.is_selected
         self.save()
 
     def set_done(self):

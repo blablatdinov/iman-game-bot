@@ -44,11 +44,15 @@ def translate_tasks_in_keyboard(tasks: tuple):
     task_group_pk = tasks[0].group.pk
     buttons = []
     for index, task in enumerate(tasks):
+        if RecordDailyTask.objects.get(pk=task.pk).is_selected:
+            action_name = "set_to_unselected"
+        else:
+            action_name = "set_to_selected"
         buttons.append(
             (
-                (f"{selected_or_no(task.pk, 1)} 1", f"set_to_selected({task.pk},{1})"),
-                (f"{selected_or_no(task.pk, 2)} 2", f"set_to_selected({task.pk},{2})"),
-                (f"{selected_or_no(task.pk, 3)} 3", f"set_to_selected({task.pk},{3})"),
+                (f"{selected_or_no(task.pk, 1)} 1", f"{action_name}({task.pk},{1})"),
+                (f"{selected_or_no(task.pk, 2)} 2", f"{action_name}({task.pk},{2})"),
+                (f"{selected_or_no(task.pk, 3)} 3", f"{action_name}({task.pk},{3})"),
             )
         )
     if task_type == "body":
