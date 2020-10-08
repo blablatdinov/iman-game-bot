@@ -52,14 +52,14 @@ def translate_tasks_in_keyboard(tasks: tuple):
             )
         )
     if task_type == "body":
-        buttons.append((("Душа", f"get_task_keyboard('soul', {task_group_pk})"),))
+        buttons.append((("Душа >", f"get_task_keyboard('soul', {task_group_pk})"),))
     elif task_type == "soul":
         buttons.append(
-            (("Тело", f"get_task_keyboard('body', {task_group_pk})"), ("Дух", f"get_task_keyboard('spirit', {task_group_pk})"),)
+            (("< Тело", f"get_task_keyboard('body', {task_group_pk})"), ("Дух >", f"get_task_keyboard('spirit', {task_group_pk})"),)
         )
     elif task_type == "spirit":
         buttons.append(
-            (("Душа", f"get_task_keyboard('soul', {task_group_pk})"),)
+            (("< Душа", f"get_task_keyboard('soul', {task_group_pk})"),)
         )
     keyboard = InlineKeyboard(buttons).keyboard
     return keyboard
