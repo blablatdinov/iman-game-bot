@@ -120,7 +120,7 @@ def ask_about_task():
     for subscriber in Subscriber.objects.filter(is_active=True):
         today = timezone.now().date()
         text = "И снова, Ас-саляму ‘алейкум, брат! Как прошел день? Что из запланированного получилось сделать? " \
-               "Поделись со мной и я внесу твой результат в наш отчет. "
+               "Поделись со мной и я внесу твой результат в наш отчет.\n"
         tasks = [
             x.pk for x in
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
@@ -148,6 +148,6 @@ def clean_ask():
 
 
 def send_reminders():
-    for subscriber in Subscriber.objects.fitler(is_active=True):
+    for subscriber in Subscriber.objects.filter(is_active=True):
         reminder_text = Reminder.objects.all().order_by("?")[0].text
         Answer(reminder_text).send(subscriber.tg_chat_id)

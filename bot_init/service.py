@@ -160,7 +160,8 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             task = RecordDailyTask.objects.get(pk=task_id)
             task.set_done()
         if len(next_tasks_list) == 0:
-            if (subscriber := Subscriber.objects.get(tg_chat_id=chat_id).day) == 1:
+            subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
+            if subscriber.day == 1:
                 text = "Ну что, по основным моментам мы с тобой прошлись. " \
                        "Если остались вопросы, то задавай их в нашем Telegam чате или на " \
                        "странице в Инстаграм @iman.club\nНа этом все, ты выполняй задания, " \
