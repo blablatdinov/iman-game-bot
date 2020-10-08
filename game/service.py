@@ -6,8 +6,7 @@ from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
 from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
-from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup
-
+from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup, Reminder
 
 TASKS_TYPES = tuple([x[0] for x in DAILY_TASK_TYPE])
 
@@ -146,3 +145,9 @@ def clean_ask():
             message.tg_delete()
         except Exception as e:
             print(e)
+
+
+def send_reminders():
+    for subscriber in Subscriber.objects.fitler(is_active=True):
+        reminder_text = Reminder.objects.all().order_by("?")[0].text
+        Answer(reminder_text).send(subscriber.tg_chat_id)
