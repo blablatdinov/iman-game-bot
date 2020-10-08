@@ -160,8 +160,18 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             task = RecordDailyTask.objects.get(pk=task_id)
             task.set_done()
         if len(next_tasks_list) == 0:
+            if (subscriber := Subscriber.objects.get(tg_chat_id=chat_id).day) == 1:
+                text = "Ну что, по основным моментам мы с тобой прошлись. " \
+                       "Если остались вопросы, то задавай их в нашем Telegam чате или на " \
+                       "странице в Инстаграм @iman.club\nНа этом все, ты выполняй задания, " \
+                       "я буду их анализировать и через месяц покажу на сколько ты прибавил " \
+                       "в каждом пункте своего развития. Алга, брат! Бисмиллях! "
+                subscriber.day = 2
+                subscriber.save()
+            else:
+                text = "Отлично, отчет готов"
             tg_delete_message(chat_id=chat_id, message_id=message_id)
-            Answer('Отлично, отчет готов', keyboard=get_default_keyboard(), chat_id=chat_id).send()
+            Answer(text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return
         text, keyboard = ask_single_task(next_tasks_list)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
