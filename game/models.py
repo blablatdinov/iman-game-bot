@@ -1,7 +1,6 @@
 from django.db import models
 
 from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
-# from bot_init.models import Subscriber
 
 
 class MembersGroup(models.Model):
@@ -69,3 +68,7 @@ class BeginSurveyQuestion(models.Model):
     class Meta:
         verbose_name = "Вопрос для начального тестирования"
         verbose_name_plural = "Вопросы для начального тестирования"
+
+
+class Reminder(models.Model):
+    text = models.TextField()
