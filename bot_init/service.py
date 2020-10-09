@@ -89,7 +89,6 @@ def get_group_statistic_by_chat_id(chat_id: int) -> int:
 
 def allow_time_for_write_points():
     now = timezone.now()
-    print(f'{now.hour + 3=}')
     return 20 <= now.hour + 3 <= 24
 
 
@@ -118,13 +117,9 @@ def text_message_service(chat_id: int, text: str):
         print('\n' * 3)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
 
-def ask_about_today_points():
-    answer = Answer('Введите сколько очков вы набрали сегодня')
-    for subscriber in Subscriber.objects.filter(is_active=True):
-        answer.send(subscriber.tg_chat_id)
-
 
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
+    # TODO побить функцию
     logger.info(f"{chat_id=} {text}")
     if "set_to_selected" in text:
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
@@ -135,6 +130,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         record_daily_task.complexity = level
         record_daily_task.save()
         tasks = record_task_group.daily_tasks_records.filter(task__task_type=task_type)
+        # TODO выхардкодить индексы
         text = f"{tasks[0].task.get_task_type_display()}\n\n" \
                f"1) {tasks[0].task.text}\n" \
                f"2) {tasks[1].task.text}\n" \
