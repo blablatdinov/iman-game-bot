@@ -19,42 +19,47 @@ logger.add(f"{settings.BASE_DIR}/logs/app.log")
 
 
 def get_primary_key_from_start_message(text: str) -> int:
+    """Достать идентификатор группы участников из стартового сообщения"""
     return int(text[7:])
 
 
-def get_acquaintance_next_keyboard(step_num):
+def get_acquaintance_next_keyboard(step_num):  # TODO add type hints
+    """Получить клавиатуру инструктажа"""
     buttons = [
         (('Вперед', f'acquaintance({step_num})'),)
     ]
     return InlineKeyboard(buttons).keyboard
 
 
-def registration_subscriber(chat_id: int, text: str):
+def registration_subscriber(chat_id: int, text: str) -> Answer:
     """Логика сохранения подписчика"""
     try:
         pk = get_primary_key_from_start_message(text)
         members_group = MembersGroup.objects.get(pk=pk)
     except ValueError:
         return Answer("Получите ссылку-приглашение для вашей команды")
-    subscriber, created = Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
+    Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
     text = AdminMessage.objects.get(key='start').text
     keyboard = get_acquaintance_next_keyboard(1)
     return Answer(text, keyboard=keyboard)
 
 
-def get_tbot_instance():
+def get_tbot_instance() -> TeleBot:
+    """Получить объект для взаимодействия с api телеграма"""
     return TeleBot(settings.TG_BOT.token)
 
 
-def update_webhook(host=f'{settings.TG_BOT.webhook_host}/{settings.TG_BOT.token}'):
+def update_webhook(host: str = f'{settings.TG_BOT.webhook_host}/{settings.TG_BOT.token}'):
     """Обновляем webhook"""
     tbot = get_tbot_instance()
     tbot.remove_webhook()
     sleep(1)
     web = tbot.set_webhook(host)
+    return web
 
 
 def get_subscriber_by_chat_id(chat_id: int):
+    """Получить подписчика по идентификатору чата"""
     try:
         subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
         return subscriber
@@ -62,63 +67,23 @@ def get_subscriber_by_chat_id(chat_id: int):
         pass  # TODO что будем делать в этом случае
 
 
-def write_points(chat_id: int, points_count: int):
-    subscriber = get_subscriber_by_chat_id(chat_id)
-    PointsRecord.objects.create(subscriber=subscriber, points_count=points_count)
-
-
-def get_subscriber_point_count(subscriber: Subscriber) -> int:
-    points_records = PointsRecord.objects.filter(subscriber=subscriber)
-    result = 0
-    for elem in points_records:
-        result += elem.points_count
-    return result
-
-
-def get_subscriber_statistic_by_chat_id(chat_id: int) -> int:
-    subscriber = get_subscriber_by_chat_id(chat_id)
-    return get_subscriber_point_count(subscriber)
-
-
-def get_group_statistic_by_chat_id(chat_id: int) -> int:
-    subscriber = get_subscriber_by_chat_id(chat_id)
-    group = subscriber.members_group
-    group_points = sum([get_subscriber_point_count(subscriber) for subscriber in group.subscribers.all()])
-    return group_points
-
-
-def allow_time_for_write_points():
-    now = timezone.now()
-    return 20 <= now.hour + 3 <= 24
-
-
-def check_points_count_for_today(chat_id):
-    subscriber = get_subscriber_by_chat_id(chat_id)
-    now = timezone.now()
-    today_date = datetime.datetime(now.year, now.month, now.day)
-    tomorrow_date = datetime.datetime(now.year, now.month, now.day + 1)
-    points_records = PointsRecord.objects.filter(
-        subscriber=subscriber,
-        date__range=(today_date, tomorrow_date)
-    )
-    return points_records.count()
+def get_subscriber_statistic_by_chat_id(chat_id: int):
+    ...
 
 
 def text_message_service(chat_id: int, text: str):
+    """Обработка текстовых сообщений"""
     if text == '📈Статистика':
-        subscriber_points = get_subscriber_statistic_by_chat_id(chat_id)
-        group_points = get_group_statistic_by_chat_id(chat_id)
-        text = f'Баллов у группы: {group_points}\nБаллов у вас: {subscriber_points}'
-        return Answer(text, keyboard=get_default_keyboard())
+        ...
     elif Subscriber.objects.get(tg_chat_id=chat_id).step == "ask_sub_purpose":
         admin_message = AdminMessage.objects.get(pk=4)
         text = admin_message.text
         keyboard = get_acquaintance_next_keyboard(4)
-        print('\n' * 3)
         return Answer(text, keyboard=keyboard, chat_id=chat_id)
 
 
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
+    """Обработка нажатий на inline кнопку"""
     # TODO побить функцию
     logger.info(f"{chat_id=} {text}")
     if "set_to_selected" in text:
@@ -215,4 +180,5 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
 
 
 def tg_delete_message(chat_id, message_id):
+    """Удалить сообщение в телеграм"""
     get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)

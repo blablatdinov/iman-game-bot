@@ -1,5 +1,3 @@
-from time import sleep
-
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.conf import settings
@@ -8,7 +6,7 @@ import telebot
 from loguru import logger
 
 from config.settings import TG_BOT
-from bot_init.service import registration_subscriber, get_tbot_instance, text_message_service, handle_query_service
+from bot_init.service import registration_subscriber, text_message_service, handle_query_service
 from bot_init.utils import save_message
 from bot_init.schemas import Answer
 
@@ -51,7 +49,6 @@ def text_handler(message):
 @tbot.callback_query_handler(func=lambda call: True)
 def handle_query(call):
     """Обравботка нажатий на инлайн кнопку"""
-    # save_callback_data(call)
     answer = handle_query_service(
         chat_id=call.from_user.id,
         text=call.data,
@@ -59,6 +56,5 @@ def handle_query(call):
         message_text=call.message.text,
         call_id=call.id
     )
-    if isinstance(answer, Answer) or isinstance(answer, list):
+    if isinstance(answer, Answer):
         answer.edit(call.message.message_id)
-        # send_answer(answer, call.from_user.id)

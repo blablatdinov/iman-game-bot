@@ -7,10 +7,13 @@ class Subscriber(models.Model):
     """ Модель подписчика бота """
     tg_chat_id = models.IntegerField(verbose_name="Идентификатор подписчика")
     is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
-    comment = models.TextField(blank=True, null=True)
-    members_group = models.ForeignKey(MembersGroup, on_delete=models.CASCADE, related_name='subscribers')
-    day = models.IntegerField(default=1)
-    step = models.CharField(max_length=1000)
+    comment = models.TextField(blank=True, null=True, verbose_name="Комментарй к подписчику")
+    members_group = models.ForeignKey(
+        MembersGroup, on_delete=models.CASCADE, related_name='subscribers',
+        verbose_name="Группа в которой состоит пользователь"
+    )
+    day = models.IntegerField(default=1, verbose_name="День")
+    step = models.CharField(max_length=1000, verbose_name="Шаг пользователя")
     points_body = models.IntegerField(default=0, verbose_name="Уровень физ. развития")
     points_soul = models.IntegerField(default=0, verbose_name="Уровень духовного развития")
     points_spirit = models.IntegerField(default=0, verbose_name="Уровень душевного развития")
@@ -36,6 +39,7 @@ class Message(models.Model):
     text = models.TextField(null=True, verbose_name="Текст сообщения")
     json = models.TextField()
     is_removed = models.BooleanField(default=False, verbose_name="Удалено ли сообщение у пользователя")
+    # TODO добавить __str__ метод
 
     def tg_delete(self):
         from bot_init.service import tg_delete_message

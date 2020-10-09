@@ -1,6 +1,12 @@
 """
 Модуль, содержащий классы и функции для создания клавиатур.
 
+TODO интересная идея для создания клавиатур использовать следующую конструкцию:
+buttons = (
+    line(button(text="...", data="..."), button(text="...", data="...")),
+    line(button(text="...", data="..."), button(text="...", data="..."))
+)
+
 """
 from telebot import types
 

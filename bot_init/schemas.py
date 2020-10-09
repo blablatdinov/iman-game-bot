@@ -1,3 +1,4 @@
+# TODO жирные методы
 from bot_init.markup import get_default_keyboard
 
 
@@ -33,6 +34,7 @@ class Answer:
 
     def edit(self, message_id: int, chat_id: int = None):
         from bot_init.service import get_tbot_instance
+        from bot_init.utils import save_message
         if chat_id is None:
             chat_id = self.chat_id
         if chat_id is None:
