@@ -14,7 +14,6 @@ from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDaily
 from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
 from game.services.survey import get_next_question, set_points, start_survey
 
-
 logger.add(f"{settings.BASE_DIR}/logs/app.log")
 
 
@@ -131,7 +130,10 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
                 subscriber.day = 2
                 subscriber.save()
             else:
-                text = "Отлично, отчет готов"
+                text = "Я рад, что у тебя получилось выполнить запланированное. Но может случиться и так, что ты не " \
+                       "сможешь выполнить взятую задачу. Все мы люди.. Кроме меня, конечно. Сразу тебя предупрежу, " \
+                       "что если ты  за одну неделю сольешь 3 задания в направлении, то потеряешь баллы. " \
+                       "Помни об этом и с умом выбирай задания и свой уровень. Алга, брат! Бисмиллях!"
             tg_delete_message(chat_id=chat_id, message_id=message_id)
             Answer(text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return
@@ -154,13 +156,13 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     elif "acquaintance" in text:
         step_num = int(re.search(r'\d+', text).group(0))
         if step_num == 5:
-            admin_message = AdminMessage.objects.get(pk=step_num+1)
+            admin_message = AdminMessage.objects.get(pk=step_num + 1)
             Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
-            return 
+            return
         elif step_num == 2:
             answer = start_survey(chat_id)
             return answer
-        admin_message = AdminMessage.objects.get(pk=step_num+1)
+        admin_message = AdminMessage.objects.get(pk=step_num + 1)
         text = admin_message.text
         keyboard = get_acquaintance_next_keyboard(step_num + 1)
         Answer(text, keyboard=keyboard, chat_id=chat_id).send()
