@@ -3,7 +3,7 @@
 
 """
 import io
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -80,6 +80,61 @@ def get_plus_per_month(subscriber: Subscriber):
     return result
 
 
+def find_week_day(start_date, week_day_index):
+    for i in range(6):
+        if (date_ := start_date + timedelta(i)).weekday() == week_day_index:
+            return date_
+
+
+def get_date_ranges(first_monday, last_sunday):
+    result = []
+    n = 0
+    while True:
+        result.append(
+            (first_monday + timedelta(days=7 * n), first_monday + timedelta(days=7 * n + 7))
+        )
+        n += 1
+        if first_monday + timedelta(days=7 * n - 1) == last_sunday:
+            break
+    return result
+
+
+def get_minus_per_skips(subscriber: Subscriber, tasks):
+    result = [0, 0, 0]
+    now_date = datetime.now()
+    start_date = datetime(now_date.year, now_date.month, 1)
+    end_date = datetime(now_date.year, (now_date.month + 1 % 12), 1)
+    first_monday = find_week_day(start_date, 0) - timedelta(7)
+    last_sunday = find_week_day(end_date, 6)
+    ranges = get_date_ranges(first_monday, last_sunday)
+    for start_date, end_date in ranges:
+        print("body_tasks - ", tasks[0].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
+        print("soul_tasks - ", tasks[1].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
+        print("spirit_tasks - ", tasks[2].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
+        print(start_date, end_date)
+        print()
+        if tasks[0].filter(
+            date__range=(start_date, end_date),
+            is_done=False,
+            is_selected=True,
+        ).count() >= 3:
+            result[0] -= 1.5
+        if tasks[1].filter(
+            date__range=(start_date, end_date),
+            is_done=False,
+            is_selected=True,
+        ).count() >= 3:
+            result[1] -= 1.5
+        if tasks[2].filter(
+            date__range=(start_date, end_date),
+            is_done=False,
+            is_selected=True,
+        ).count() >= 3:
+            result[2] -= 1.5
+    print(result)
+    return result
+
+
 def make_statistic(chat_id: int):
     subscriber = get_subscriber_by_chat_id(chat_id)
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
@@ -91,5 +146,7 @@ def make_statistic(chat_id: int):
         (start_spirit + diff_body) / 10
     ]
     image = get_plot(start_means, end_means)
+    task_records = get_tasks(subscriber)
+    minuses = get_minus_per_skips(subscriber, task_records)
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image)
