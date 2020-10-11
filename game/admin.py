@@ -32,10 +32,18 @@ class RecordDailyTaskAdmin(admin.ModelAdmin):
         "subscriber",
         "task",
         "is_done",
+        "is_selected",
         "date",
         "complexity",
+        "task_type",
     )
+    list_editable = ('is_done',)
 
     def get_queryset(self, request):
         return self.model.objects.filter(is_selected=True)
+
+    def task_type(self, obj):
+        return obj.task.get_task_type_display()
+
+    task_type.short_description = "Тип задания"
 
