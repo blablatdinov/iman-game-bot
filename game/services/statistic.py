@@ -14,9 +14,8 @@ from game.models import RecordDailyTask
 
 
 def get_tasks(subscriber: Subscriber):
-    now_date = datetime.now()
-    start_date = datetime(now_date.year, now_date.month, 1)
-    end_date = datetime(now_date.year, (now_date.month + 1 % 12), 1)
+    start_date = subscriber.registry_date
+    end_date = start_date + timedelta(days=30)
     queryset = RecordDailyTask.objects.filter(
         subscriber=subscriber,
         date__range=(start_date, end_date),
@@ -102,8 +101,8 @@ def get_date_ranges(first_monday, last_sunday):
 def get_minus_per_skips(subscriber: Subscriber, tasks):
     result = [0, 0, 0]
     now_date = datetime.now()
-    start_date = datetime(now_date.year, now_date.month, 1)
-    end_date = datetime(now_date.year, (now_date.month + 1 % 12), 1)
+    start_date = subscriber.registry_date
+    end_date = start_date + timedelta(days=30)
     first_monday = find_week_day(start_date, 0) - timedelta(7)
     last_sunday = find_week_day(end_date, 6)
     ranges = get_date_ranges(first_monday, last_sunday)
