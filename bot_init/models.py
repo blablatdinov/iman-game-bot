@@ -14,6 +14,7 @@ class Subscriber(models.Model):
     )
     day = models.IntegerField(default=1, verbose_name="День")
     step = models.CharField(max_length=1000, verbose_name="Шаг пользователя")
+    registry_date = models.DateField(auto_now_add=True)
     points_body = models.IntegerField(default=0, verbose_name="Уровень физ. развития")
     points_soul = models.IntegerField(default=0, verbose_name="Уровень духовного развития")
     points_spirit = models.IntegerField(default=0, verbose_name="Уровень душевного развития")

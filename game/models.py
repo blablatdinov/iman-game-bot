@@ -43,13 +43,19 @@ class RecordDailyTask(models.Model):
     исполнения.
 
     """
-    subscriber = models.ForeignKey("bot_init.Subscriber", on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Подписчик")
-    task = models.ForeignKey(DailyTask, on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Задача")
+    subscriber = models.ForeignKey(
+        "bot_init.Subscriber", on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Подписчик"
+    )
+    task = models.ForeignKey(
+        DailyTask, on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Задача"
+    )
     is_selected = models.BooleanField(default=False, verbose_name="Определено в исполнение")
     is_done = models.BooleanField(default=False, verbose_name="Выполнено")
     date = models.DateField(auto_now_add=True, verbose_name="Дата")
     complexity = models.IntegerField(default=0, verbose_name="Сложность, которую выбрал пользователь")
-    group = models.ForeignKey(RecordDailyTaskGroup, on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Подписчик")
+    group = models.ForeignKey(
+        RecordDailyTaskGroup, on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Группа подписчиков"
+    )
 
     def switch(self):
         self.is_selected = not self.is_selected
