@@ -68,21 +68,28 @@ def get_plot(start_means: list, end_means: list):
     return buf
 
 
+def get_plus_per_month(subscriber: Subscriber):
+    body_record_daily_tasks, soul_record_daily_tasks, spirit_record_daily_tasks = get_tasks(subscriber)
+    result = [0, 0, 0]
+    for elem in body_record_daily_tasks:
+        result[0] += elem.complexity
+    for elem in soul_record_daily_tasks:
+        result[1] += elem.complexity
+    for elem in spirit_record_daily_tasks:
+        result[2] += elem.complexity
+    return result
+
+
 def make_statistic(chat_id: int):
     subscriber = get_subscriber_by_chat_id(chat_id)
-    body_record_daily_tasks, soul_record_daily_tasks, spirit_record_daily_tasks = get_tasks(subscriber)
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
-    end_body = start_body
-    end_soul = start_soul
-    end_spirit = start_spirit
-    for elem in body_record_daily_tasks:
-        end_body += elem.complexity
-    for elem in soul_record_daily_tasks:
-        end_soul += elem.complexity
-    for elem in spirit_record_daily_tasks:
-        end_spirit += elem.complexity
+    diff_body, diff_soul, diff_spirit = get_plus_per_month(subscriber)
     start_means = [start_body / 10, start_soul / 10, start_spirit / 10]
-    end_means = [end_body / 10, end_soul / 10, end_spirit / 10]
+    end_means = [
+        (start_body + diff_body) / 10,
+        (start_soul + diff_body) / 10,
+        (start_spirit + diff_body) / 10
+    ]
     image = get_plot(start_means, end_means)
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image)
