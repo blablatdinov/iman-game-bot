@@ -139,13 +139,13 @@ def make_statistic(chat_id: int):
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
     diff_body, diff_soul, diff_spirit = get_plus_per_month(subscriber)
     start_means = [start_body / 10, start_soul / 10, start_spirit / 10]
-    end_means = [
-        (start_body + diff_body) / 10,
-        (start_soul + diff_body) / 10,
-        (start_spirit + diff_body) / 10
-    ]
-    image = get_plot(start_means, end_means)
     task_records = get_tasks(subscriber)
     minuses = get_minus_per_skips(subscriber, task_records)
+    end_means = [
+        (start_body + diff_body - minuses[0]) / 10,
+        (start_soul + diff_body - minuses[1]) / 10,
+        (start_spirit + diff_body - minuses[2]) / 10
+    ]
+    image = get_plot(start_means, end_means)
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image)
