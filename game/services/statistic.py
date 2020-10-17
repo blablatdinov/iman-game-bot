@@ -7,15 +7,16 @@ from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
 import numpy as np
+from loguru import logger
 
 from bot_init.models import Subscriber
 from bot_init.service import get_subscriber_by_chat_id, get_tbot_instance
 from game.models import RecordDailyTask
 
 
-def get_tasks(subscriber: Subscriber):
-    start_date = subscriber.registry_date
-    end_date = start_date + timedelta(days=30)
+def get_tasks_per_period(subscriber: Subscriber, period):
+    start_date = period[0]
+    end_date = period[1]
     queryset = RecordDailyTask.objects.filter(
         subscriber=subscriber,
         date__range=(start_date, end_date),
@@ -50,14 +51,14 @@ def get_plot(start_means: list, end_means: list):
     for rect in rects1:
         height = rect.get_height()
         ax.annotate('{}'.format(height),
-                    xy=(rect.get_x() + rect.get_width() / 2, height ),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
                     xytext=(0, 0),  # 3 points vertical offset
                     textcoords="offset points",
                     ha='center', va='bottom')
     for rect in rects2:
         height = rect.get_height()
         ax.annotate('{}'.format(height),
-                    xy=(rect.get_x() + rect.get_width() / 2, height ),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
                     xytext=(0, 0),  # 3 points vertical offset
                     textcoords="offset points",
                     ha='center', va='bottom')
@@ -67,15 +68,19 @@ def get_plot(start_means: list, end_means: list):
     return buf
 
 
-def get_plus_per_month(subscriber: Subscriber):
-    body_record_daily_tasks, soul_record_daily_tasks, spirit_record_daily_tasks = get_tasks(subscriber)
+def get_plus_per_period(subscriber: Subscriber, period):
+    """
+    subscriber: Subscriber
+    period: tuple(datetime, datetime)
+    """
+    body_record_daily_tasks, soul_record_daily_tasks, spirit_record_daily_tasks = get_tasks_per_period(subscriber, period)
     result = [0, 0, 0]
-    for elem in body_record_daily_tasks:
-        result[0] += elem.complexity
-    for elem in soul_record_daily_tasks:
-        result[1] += elem.complexity
-    for elem in spirit_record_daily_tasks:
-        result[2] += elem.complexity
+    for _ in body_record_daily_tasks:
+        result[0] += 2
+    for _ in soul_record_daily_tasks:
+        result[1] += 2
+    for _ in spirit_record_daily_tasks:
+        result[2] += 2
     return result
 
 
@@ -107,11 +112,6 @@ def get_minus_per_skips(subscriber: Subscriber, tasks):
     last_sunday = find_week_day(end_date, 6)
     ranges = get_date_ranges(first_monday, last_sunday)
     for start_date, end_date in ranges:
-        print("body_tasks - ", tasks[0].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
-        print("soul_tasks - ", tasks[1].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
-        print("spirit_tasks - ", tasks[2].filter(date__range=(start_date, end_date), is_done=False, is_selected=True))
-        print(start_date, end_date)
-        print()
         if tasks[0].filter(
             date__range=(start_date, end_date),
             is_done=False,
@@ -134,18 +134,53 @@ def get_minus_per_skips(subscriber: Subscriber, tasks):
     return result
 
 
-def make_statistic(chat_id: int):
+def get_nafs_value(subscriber, period):
+    result = 0
+    tasks = get_tasks_per_period(subscriber, period)
+    for group in tasks:
+        group = group.filter(is_selected=True, is_done=True)
+        for task in group:
+            logger.debug(task)
+            logger.debug(task.complexity)
+            print()
+            result += task.complexity
+    return result
+
+
+def make_statistic(chat_id: int, period):
     subscriber = get_subscriber_by_chat_id(chat_id)
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
-    diff_body, diff_soul, diff_spirit = get_plus_per_month(subscriber)
+    diff_body, diff_soul, diff_spirit = get_plus_per_period(
+        subscriber, period
+    )
     start_means = [start_body / 10, start_soul / 10, start_spirit / 10]
-    task_records = get_tasks(subscriber)
+    task_records = get_tasks_per_period(subscriber, period)
     minuses = get_minus_per_skips(subscriber, task_records)
     end_means = [
         (start_body + diff_body - minuses[0]) / 10,
         (start_soul + diff_body - minuses[1]) / 10,
         (start_spirit + diff_body - minuses[2]) / 10
     ]
+    nafs_value = get_nafs_value(subscriber, period)
+    logger.debug(f'nafs value = {nafs_value/10}')
     image = get_plot(start_means, end_means)
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image)
+
+
+def make_statistic_by_two_week(chat_id):
+    subscriber = get_subscriber_by_chat_id(chat_id)
+    period = (
+        subscriber.registry_date,
+        subscriber.registry_date + timedelta(14)
+    )
+    make_statistic(chat_id, period)
+
+
+def make_statistic_by_month(chat_id):
+    subscriber = get_subscriber_by_chat_id(chat_id)
+    period = (
+        subscriber.registry_date,
+        subscriber.registry_date + timedelta(30)
+    )
+    make_statistic(chat_id, period)

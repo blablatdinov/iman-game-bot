@@ -36,10 +36,12 @@ def registration_subscriber(chat_id: int, text: str) -> Answer:
         members_group = MembersGroup.objects.get(pk=pk)
     except ValueError:
         return Answer("Получите ссылку-приглашение для вашей команды")
-    Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
-    text = AdminMessage.objects.get(key='start').text
-    keyboard = get_acquaintance_next_keyboard(1)
-    return Answer(text, keyboard=keyboard)
+    _, created = Subscriber.objects.get_or_create(tg_chat_id=chat_id, members_group=members_group)
+    if created:
+        text = AdminMessage.objects.get(key='start').text
+        keyboard = get_acquaintance_next_keyboard(1)
+        return Answer(text, keyboard=keyboard)
+    return Answer("Вы уже зарегистрированы")
 
 
 def get_tbot_instance() -> TeleBot:
@@ -150,6 +152,12 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         if step_num == 5:
             admin_message = AdminMessage.objects.get(pk=step_num + 1)
             Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
+            subscriber = get_subscriber_by_chat_id(chat_id)
+            text = 'Начальные данные:\n\n' \
+                   f'Тело: {subscriber.points_body}\n' \
+                   f'Душа: {subscriber.points_spirit}\n' \
+                   f'Дух: {subscriber.points_soul}'
+            Answer(text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return
         elif step_num == 2:
             answer = start_survey(chat_id)
