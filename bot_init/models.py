@@ -41,6 +41,7 @@ class Message(models.Model):
     text = models.TextField(null=True, verbose_name="Текст сообщения")
     json = models.TextField()
     is_removed = models.BooleanField(default=False, verbose_name="Удалено ли сообщение у пользователя")
+    key = models.CharField(max_length=32, blank=True, null=True)
     # TODO добавить __str__ метод
 
     def tg_delete(self):

@@ -4,13 +4,15 @@ from bot_init.models import Message
 import json
 
 
-def save_message(msg):
+def save_message(msg, message_key=None):
     """ Сохранение сообщения от пользователя """
     date = make_aware(datetime.fromtimestamp(msg.date))
     from_user_id = msg.from_user.id
     message_id = msg.message_id
     chat_id = msg.chat.id
     text = msg.text
+    print("saving message")
+    print(message_key)
     try:
         json_str = msg.json
     except:
@@ -18,6 +20,6 @@ def save_message(msg):
     json_text = json.dumps(json_str, indent=2, ensure_ascii=False)
     message_instance = Message.objects.create(
         date=date, from_user_id=from_user_id, message_id=message_id,
-        chat_id=chat_id, text=text, json=json_text
+        chat_id=chat_id, text=text, json=json_text, key=message_key
     )
     return message_instance

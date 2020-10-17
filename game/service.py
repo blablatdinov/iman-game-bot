@@ -99,7 +99,7 @@ def send_daily_tasks():
         group = create_daily_task_records(subscriber, tasks)
         body_tasks = group.daily_tasks_records.filter(task__task_type="body")
         keyboard = translate_tasks_in_keyboard(body_tasks)
-        Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
+        Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ques_tasks").send()
 
 
 def ask_single_task(tasks_list):
@@ -140,6 +140,16 @@ def clean_ask():
     queryset = Message.objects.filter(
         is_removed=False, text__contains="Время заполнить отчет по заданиям, которые ты выбрал"
     )
+    for message in queryset:
+        try:
+            message.tg_delete()
+        except Exception as e:
+            print(e)
+
+
+def clean_ques():
+    queryset = Message.objects.filter(key="ques_tasks")
+    print(queryset)
     for message in queryset:
         try:
             message.tg_delete()

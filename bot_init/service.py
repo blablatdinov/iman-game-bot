@@ -1,18 +1,17 @@
 import re
-import datetime
 from time import sleep
 
 from django.conf import settings
-from django.utils import timezone
 from telebot import TeleBot
 from loguru import logger
 
 from bot_init.models import Subscriber, AdminMessage
 from bot_init.schemas import Answer
 from bot_init.markup import get_default_keyboard, InlineKeyboard
-from game.models import MembersGroup, PointsRecord, RecordDailyTask, RecordDailyTaskGroup
-from game.service import translate_tasks_in_keyboard, get_text, ask_single_task
+from game.models import MembersGroup, RecordDailyTask, RecordDailyTaskGroup
+from game.service import translate_tasks_in_keyboard, ask_single_task
 from game.services.survey import get_next_question, set_points, start_survey
+
 
 logger.add(f"{settings.BASE_DIR}/logs/app.log")
 
@@ -122,18 +121,11 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         if len(next_tasks_list) == 0:
             subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
             if subscriber.day == 1:
-                text = "Ну что, по основным моментам мы с тобой прошлись. " \
-                       "Если остались вопросы, то задавай их в нашем Telegam чате или на " \
-                       "странице в Инстаграм @iman.club\nНа этом все, ты выполняй задания, " \
-                       "я буду их анализировать и через месяц покажу на сколько ты прибавил " \
-                       "в каждом пункте своего развития. Алга, брат! Бисмиллях! "
+                text = AdminMessage.objects.get(key="first_day_survey")
                 subscriber.day = 2
                 subscriber.save()
             else:
-                text = "Я рад, что у тебя получилось выполнить запланированное. Но может случиться и так, что ты не " \
-                       "сможешь выполнить взятую задачу. Все мы люди.. Кроме меня, конечно. Сразу тебя предупрежу, " \
-                       "что если ты  за одну неделю сольешь 3 задания в направлении, то потеряешь баллы. " \
-                       "Помни об этом и с умом выбирай задания и свой уровень. Алга, брат! Бисмиллях!"
+                text = AdminMessage.objects.get(key="other_day_survey")
             tg_delete_message(chat_id=chat_id, message_id=message_id)
             Answer(text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return

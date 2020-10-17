@@ -7,12 +7,13 @@ class Answer:
     keyboard = get_default_keyboard()
     chat_id: int
 
-    def __init__(self, text, chat_id: int = None, keyboard=None):
+    def __init__(self, text, chat_id: int = None, keyboard=None, message_key=None):
         self.text = text
         if keyboard is not None:
             self.keyboard = keyboard
         if chat_id is not None:
             self.chat_id = chat_id
+        self.message_key = message_key
 
     def send(self, chat_id: int = None):
         from bot_init.service import get_tbot_instance
@@ -25,10 +26,10 @@ class Answer:
         try:
             if self.keyboard:
                 message = tbot.send_message(chat_id=chat_id, text=self.text, reply_markup=self.keyboard, parse_mode="HTML")
-                save_message(message)
+                save_message(message, message_key=self.message_key)
                 return
             message = tbot.send_message(chat_id=chat_id, text=self.text, parse_mode="HTML")
-            save_message(message)
+            save_message(message, message_key=self.message_key)
         except Exception as e:
             print(e)
 

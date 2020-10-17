@@ -3,7 +3,11 @@ from django.contrib import admin
 from bot_init.models import Message, Subscriber, AdminMessage
 
 
-admin.site.register(Message)
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ("id", "key")
+
+
 admin.site.register(Subscriber)
 
 
