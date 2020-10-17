@@ -153,6 +153,8 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             admin_message = AdminMessage.objects.get(pk=step_num + 1)
             Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             subscriber = get_subscriber_by_chat_id(chat_id)
+            subscriber.step = ""
+            subscriber.save()
             text = 'Начальные данные:\n\n' \
                    f'Тело: {subscriber.points_body}\n' \
                    f'Душа: {subscriber.points_spirit}\n' \
