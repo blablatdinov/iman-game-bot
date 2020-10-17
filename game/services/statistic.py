@@ -165,7 +165,7 @@ def make_statistic(chat_id: int, period):
     logger.debug(f'nafs value = {nafs_value/10}')
     image = get_plot(start_means, end_means)
     tbot = get_tbot_instance()
-    tbot.send_photo(chat_id, image)
+    tbot.send_photo(chat_id, image, caption=f'Нафс {nafs_value}')
 
 
 def make_statistic_by_two_week(chat_id):

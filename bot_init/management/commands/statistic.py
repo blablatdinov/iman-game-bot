@@ -8,4 +8,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         make_statistic_by_month(358610865)
-        make_statistic_by_two_week(358610865)
