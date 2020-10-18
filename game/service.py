@@ -49,9 +49,9 @@ def translate_tasks_in_keyboard(tasks: tuple):
             action_name = "set_to_selected"
         buttons.append(
             (
-                (f"{selected_or_no(task.pk, 1)} 1", f"{action_name}({task.pk},{1})"),
-                (f"{selected_or_no(task.pk, 2)} 2", f"{action_name}({task.pk},{2})"),
-                (f"{selected_or_no(task.pk, 3)} 3", f"{action_name}({task.pk},{3})"),
+                (f"{selected_or_no(task.pk, 1)} 1", f"{action_name}({task.pk},1)"),
+                (f"{selected_or_no(task.pk, 2)} 2", f"{action_name}({task.pk},2)"),
+                (f"{selected_or_no(task.pk, 3)} 3", f"{action_name}({task.pk},3)"),
             )
         )
     if task_type == "body":
@@ -128,7 +128,7 @@ def ask_about_task():
         if len(tasks) < 1:
             continue
         task_text, keyboard = ask_single_task(tasks)
-        Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id).send()
+        Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ask_about_tasks").send()
 
 
 def clean_ask():
@@ -147,8 +147,8 @@ def clean_ask():
             print(e)
 
 
-def clean_ques():
-    queryset = Message.objects.filter(key="ques_tasks")
+def clean_messages(key):
+    queryset = Message.objects.filter(key=key)
     print(queryset)
     for message in queryset:
         try:
