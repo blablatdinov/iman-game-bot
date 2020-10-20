@@ -3,6 +3,11 @@ from django.contrib import admin
 from bot_init.models import Message, Subscriber, AdminMessage
 
 
+def activate_subscrbiers(modeladmin, request, queryset):
+    queryset.update(status='p')
+activate_subscrbiers.short_description = "Активировать пользвоателей"
+
+
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ("id", "key")
