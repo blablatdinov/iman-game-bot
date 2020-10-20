@@ -5,10 +5,12 @@ from bot_init.models import Message, Subscriber, AdminMessage
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ("id", "key")
+    list_display = ("id", "key", "chat_id", "text")
 
 
-admin.site.register(Subscriber)
+@admin.register(Subscriber)
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('tg_chat_id', 'is_active')
 
 
 @admin.register(AdminMessage)
