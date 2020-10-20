@@ -4,16 +4,19 @@ from bot_init.models import Message, Subscriber, AdminMessage
 
 
 def activate_subscrbiers(modeladmin, request, queryset):
-    queryset.update(status='p')
+    queryset.update(is_active=True)
 activate_subscrbiers.short_description = "Активировать пользвоателей"
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ("id", "key")
+    list_display = ("id", "key", "chat_id", "text")
 
 
-admin.site.register(Subscriber)
+@admin.register(Subscriber)
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('tg_chat_id', 'is_active')
+    actions = [activate_subscrbiers]
 
 
 @admin.register(AdminMessage)

@@ -95,7 +95,7 @@ def send_daily_tasks():
     week_day = get_week_day()
     tasks = DailyTask.objects.filter(week_day=week_day)
     text = get_text(tasks.filter(task_type="body"))
-    for subscriber in Subscriber.objects.filter(is_active=True):
+    for subscriber in Subscriber.objects.filter(is_active=True):  # TODO вынести итерацию в отдельную функцию, чтобы пользователю можно было отправлять индивидуально
         group = create_daily_task_records(subscriber, tasks)
         body_tasks = group.daily_tasks_records.filter(task__task_type="body")
         keyboard = translate_tasks_in_keyboard(body_tasks)
