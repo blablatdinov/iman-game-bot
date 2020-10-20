@@ -2,6 +2,7 @@ import re
 from time import sleep
 
 from django.conf import settings
+from django.utils import timezone
 from telebot import TeleBot
 from loguru import logger
 
@@ -86,7 +87,8 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     """Обработка нажатий на inline кнопку"""
     # TODO побить функцию
     logger.info(f"{chat_id=} {text}")
-    if "set_to_selected" in text:
+    TIME_LIMITS_FOR_SELECT_TASKS = (16, 17)
+    if "set_to_selected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= timezone.now().hour + 3 <= TIME_LIMITS_FOR_SELECT_TASKS[0]:
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_task_group = record_daily_task.group
@@ -101,7 +103,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
                f"2) {tasks[1].task.text}\n" \
                f"3) {tasks[2].task.text}\n"
         return Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
-    elif "set_to_unselected" in text:
+    elif "set_to_unselected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= timezone.now().hour + 3 <= TIME_LIMITS_FOR_SELECT_TASKS[0]:
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_task_group = record_daily_task.group

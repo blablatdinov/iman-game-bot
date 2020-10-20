@@ -46,15 +46,6 @@ def send_reminders_task():
     send_reminders()
 
 
-@periodic_task(run_every=(crontab(hour=9, minute=0)), name='clean_ques')
-def clean_ques_task():
-    """
-    Удалить рассылку с ежедневными заданиями
-
-    """
-    clean_messages("ques_tasks")
-
-
 @periodic_task(run_every=(crontab(hour=14, minute=0)), name='check_statistic_time')
 def check_statistic_time_task():
     """
