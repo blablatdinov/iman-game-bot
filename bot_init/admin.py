@@ -10,12 +10,13 @@ activate_subscrbiers.short_description = "Активировать пользв�
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ("id", "key", "chat_id", "text")
+    list_display = ("id", "key", "chat_id", "text", "date")
+    search_fields = ("text", "chat_id")
 
 
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):
-    list_display = ('tg_chat_id', 'is_active')
+    list_display = ('tg_chat_id', 'is_active', 'registry_date', 'day')
     actions = [activate_subscrbiers]
 
 

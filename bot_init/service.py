@@ -87,8 +87,10 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     """Обработка нажатий на inline кнопку"""
     # TODO побить функцию
     logger.info(f"{chat_id=} {text}")
-    TIME_LIMITS_FOR_SELECT_TASKS = (16, 17)
-    if "set_to_selected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= timezone.now().hour + 3 <= TIME_LIMITS_FOR_SELECT_TASKS[0]:
+    TIME_LIMITS_FOR_SELECT_TASKS = (0, 8)
+    print((timezone.now().hour + 3) % 24)
+    if "set_to_selected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= (timezone.now().hour + 3) % 24 <= TIME_LIMITS_FOR_SELECT_TASKS[1]:
+        print('wow')
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_task_group = record_daily_task.group
@@ -103,7 +105,8 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
                f"2) {tasks[1].task.text}\n" \
                f"3) {tasks[2].task.text}\n"
         return Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
-    elif "set_to_unselected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= timezone.now().hour + 3 <= TIME_LIMITS_FOR_SELECT_TASKS[0]:
+    elif "set_to_unselected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= (timezone.now().hour + 3) % 24 <= TIME_LIMITS_FOR_SELECT_TASKS[1]:
+        print('owo')
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_task_group = record_daily_task.group
@@ -124,12 +127,12 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
             task.set_done()
         if len(next_tasks_list) == 0:
             subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
+            text = AdminMessage.objects.get(key="other_day_survey").text
             if subscriber.day == 1:
-                text = AdminMessage.objects.get(key="first_day_survey")
                 subscriber.day = 2
                 subscriber.save()
             else:
-                text = AdminMessage.objects.get(key="other_day_survey")
+                ...
             tg_delete_message(chat_id=chat_id, message_id=message_id)
             Answer(text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
             return
