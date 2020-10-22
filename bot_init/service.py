@@ -120,7 +120,11 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
                f"2) {tasks[1].task.text}\n" \
                f"3) {tasks[2].task.text}\n"
         return Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
-    elif "set_to_done" in text:
+    else:
+        get_tbot_instance().answer_callback_query(
+            call_id, show_alert=True, text="Задания можно выбирать и менять с 0:00 до 9:00"
+        )
+    if "set_to_done" in text:
         task_id, task_status, next_tasks_list = eval(re.search(r'\(.+\)', text).group(0))
         if task_status:
             task = RecordDailyTask.objects.get(pk=task_id)
