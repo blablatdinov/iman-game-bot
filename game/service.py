@@ -168,3 +168,22 @@ def send_reminders():
     for subscriber in Subscriber.objects.filter(is_active=True):
         reminder_text = Reminder.objects.all().order_by("?")[0].text
         Answer(reminder_text).send(subscriber.tg_chat_id)
+
+
+def send_list_with_selected_tasks():
+    for subscriber in Subscriber.objects.filter(is_active=True):
+        text = ""
+        try:
+            today = timezone.now()
+            tasks = RecordDailyTask.objects.filter(
+                date__day=today.day,
+                date__month=today.month,
+                date__year=today.year,
+                subscriber=subscriber,
+                is_selected=True
+            )
+            for i, st in enumerate(tasks.filter(subscriber=subscriber, is_selected=True)):
+                text += f"{i + 1}. {st.task.text} ({st.task.get_task_type_display()})\n"
+            Answer(text=text).send(subscriber.tg_chat_id)
+        except Exception as e:
+            ...

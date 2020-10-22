@@ -6,7 +6,7 @@ from celery.task import periodic_task
 from celery.schedules import crontab
 
 from bot_init.models import Subscriber
-from game.service import send_daily_tasks, ask_about_task, clean_ask, send_reminders, clean_messages
+from game.service import send_daily_tasks, ask_about_task, send_reminders, clean_messages, send_list_with_selected_tasks
 from game.services.statistic import make_statistic_by_month, make_statistic_by_two_week
 
 
@@ -17,6 +17,12 @@ def celery_send_daily_tasks():
 
     """
     send_daily_tasks()
+
+
+@periodic_task(run_every=(crontab(hour=21, minute=0)), name='ask_about_task')
+def send_list_with_selected_tasks_task():
+    """Рассылает список заданий"""
+    send_list_with_selected_tasks()
 
 
 @periodic_task(run_every=(crontab(hour=21, minute=0)), name='ask_about_task')
