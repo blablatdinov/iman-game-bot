@@ -14,6 +14,7 @@ decorator==4.4.2
 Django==3.0.7
 flake8==3.8.4
 flake8-django==1.1.1
+gunicorn==20.0.4
 idna==2.10
 ipython==7.18.1
 ipython-genutils==0.2.0
