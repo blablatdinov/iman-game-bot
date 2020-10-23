@@ -108,8 +108,8 @@ def ask_single_task(tasks_list):
     text = task_record.task.text
     buttons = [
         (
-            ('Да', f'set_to_done({task_record.pk},True,{tasks_id_list})'),
-            ('Нет', f'set_to_done({task_record.pk},False,{tasks_id_list})')
+            ('Да', f'settodone({task_record.pk},True,{tasks_id_list})'.replace(" ", "")),
+            ('Нет', f'settodone({task_record.pk},False,{tasks_id_list})'.replace(" ", ""))
         )
     ]
     return text, InlineKeyboard(buttons).keyboard
@@ -117,6 +117,8 @@ def ask_single_task(tasks_list):
         
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
+    # TODO сделать функцию вызываемой для одного человека
+    # TODO формируемая инфа для кнопок слишком длинная
     for subscriber in Subscriber.objects.filter(is_active=True):
         today = timezone.now().date()
         if subscriber.day == 1:
@@ -135,6 +137,7 @@ def ask_about_task():
         if len(tasks) < 1:
             continue
         task_text, keyboard = ask_single_task(tasks)
+        print(keyboard.to_json())
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ask_about_tasks").send()
 
 

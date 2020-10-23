@@ -92,6 +92,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     if "set_to_selected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= (timezone.now().hour + 3) % 24 <= TIME_LIMITS_FOR_SELECT_TASKS[1]:
         print('wow')
         record_daily_task_id, level = eval(re.search(r'\(.+\)', text).group(0))
+        # TODO создать отдельную функцию, чтобы доставать аргументы
         record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
         record_task_group = record_daily_task.group
         task_type = record_daily_task.task.task_type
@@ -120,11 +121,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
                f"2) {tasks[1].task.text}\n" \
                f"3) {tasks[2].task.text}\n"
         return Answer(text, keyboard=translate_tasks_in_keyboard(tasks), chat_id=chat_id)
-    else:
-        get_tbot_instance().answer_callback_query(
-            call_id, show_alert=True, text="Задания можно выбирать и менять с 0:00 до 9:00"
-        )
-    if "set_to_done" in text:
+    elif "set_to_done" in text or "settodone" in text:
         task_id, task_status, next_tasks_list = eval(re.search(r'\(.+\)', text).group(0))
         if task_status:
             task = RecordDailyTask.objects.get(pk=task_id)
