@@ -43,7 +43,8 @@ def start_handler(message):
 def text_handler(message):
     save_message(message)
     answer = text_message_service(message.chat.id, message.text)
-    answer.send(chat_id=message.chat.id)
+    if isinstance(answer, Answer):
+        answer.send(chat_id=message.chat.id)
 
 
 @tbot.callback_query_handler(func=lambda call: True)
