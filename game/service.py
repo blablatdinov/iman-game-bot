@@ -114,7 +114,7 @@ def ask_single_task(tasks_list):
     ]
     return text, InlineKeyboard(buttons).keyboard
 
-        
+
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
     # TODO сделать функцию вызываемой для одного человека
@@ -126,10 +126,10 @@ def ask_about_task():
                    "то задавай их в нашем Telegam чате tg://join?invite=AAAAAEaDF5qIQRwLVR59cQ " \
                    "или на странице в Инстаграм @iman.club На этом все, ты выполняй задания, " \
                    "я буду их анализировать и через месяц покажу на сколько ты прибавил в " \
-                   "каждом пункте своего развития. Алга, брат! Бисмиллях! "
+                   "каждом пункте своего развития. Алга, брат! Бисмиллях!\n\n"
         else:
             text = "И снова, Ас-саляму ‘алейкум, брат! Как прошел день? Что из запланированного получилось сделать? " \
-                   "Поделись со мной и я внесу твой результат в наш отчет. "
+                   "Поделись со мной и я внесу твой результат в наш отчет.\n\n"
         tasks = [
             x.pk for x in
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
@@ -137,7 +137,6 @@ def ask_about_task():
         if len(tasks) < 1:
             continue
         task_text, keyboard = ask_single_task(tasks)
-        print(keyboard.to_json())
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ask_about_tasks").send()
 
 
