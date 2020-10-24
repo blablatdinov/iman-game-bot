@@ -12,6 +12,9 @@ from loguru import logger
 from bot_init.models import Subscriber
 from bot_init.service import get_subscriber_by_chat_id, get_tbot_instance
 from game.models import RecordDailyTask
+from game.services.plots import create_statistic_plot
+
+log = logger.bind(task="app")
 
 
 def get_tasks_per_period(subscriber: Subscriber, period):
@@ -34,38 +37,6 @@ def get_previous_month_result(subscriber: Subscriber):
     start_soul = subscriber.points_soul
     start_spirit = subscriber.points_body
     return start_body * 10, start_soul * 10, start_spirit * 10
-
-
-def get_plot(start_means: list, end_means: list):
-    labels = ['Здоровье', 'Личностный рост', 'Духовное развитие']
-    x = np.arange(len(labels))  # the label locations
-    width = 0.35  # the width of the bars
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width / 2, start_means, width, label='Прошлый месяц')
-    rects2 = ax.bar(x + width / 2, end_means, width, label='Сегодня')
-    ax.set_ylabel('Баллы')
-    ax.set_title('Прогресс за месяц')
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.legend()
-    for rect in rects1:
-        height = rect.get_height()
-        ax.annotate('{}'.format(height),
-                    xy=(rect.get_x() + rect.get_width() / 2, height),
-                    xytext=(0, 0),  # 3 points vertical offset
-                    textcoords="offset points",
-                    ha='center', va='bottom')
-    for rect in rects2:
-        height = rect.get_height()
-        ax.annotate('{}'.format(height),
-                    xy=(rect.get_x() + rect.get_width() / 2, height),
-                    xytext=(0, 0),  # 3 points vertical offset
-                    textcoords="offset points",
-                    ha='center', va='bottom')
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    return buf
 
 
 def get_plus_per_period(subscriber: Subscriber, period):
@@ -130,7 +101,6 @@ def get_minus_per_skips(subscriber: Subscriber, tasks):
             is_selected=True,
         ).count() >= 3:
             result[2] -= 1.5
-    print(result)
     return result
 
 
@@ -140,15 +110,13 @@ def get_nafs_value(subscriber, period):
     for group in tasks:
         group = group.filter(is_selected=True, is_done=True)
         for task in group:
-            logger.debug(task)
-            logger.debug(task.complexity)
-            print()
             result += task.complexity
     return result
 
 
 def make_statistic(chat_id: int, period):
     subscriber = get_subscriber_by_chat_id(chat_id)
+    log.info(f"make statistic for subscriber - {chat_id}")
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
     diff_body, diff_soul, diff_spirit = get_plus_per_period(
         subscriber, period
@@ -162,8 +130,8 @@ def make_statistic(chat_id: int, period):
         (start_spirit + diff_body - minuses[2]) / 10
     ]
     nafs_value = get_nafs_value(subscriber, period)
-    logger.debug(f'nafs value = {nafs_value/10}')
-    image = get_plot(start_means, end_means)
+    image = create_statistic_plot(start_means, end_means)
+    log.info(f"end of making statistic for subscriber - {chat_id}")
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image, caption=f'Нафс {nafs_value}')
 
@@ -184,3 +152,4 @@ def make_statistic_by_month(chat_id):
         subscriber.registry_date + timedelta(30)
     )
     make_statistic(chat_id, period)
+
