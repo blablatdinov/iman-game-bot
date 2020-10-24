@@ -1,6 +1,5 @@
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 import telebot
 from loguru import logger
@@ -10,9 +9,7 @@ from bot_init.service import registration_subscriber, text_message_service, hand
 from bot_init.utils import save_message
 from bot_init.schemas import Answer
 
-
 log = logger.bind(task="write_in_data")
-logger.add(f"{settings.BASE_DIR}/logs/in_data.log", filter=lambda record: record["extra"]["task"] == "write_in_data")
 
 token = TG_BOT.token
 tbot = telebot.TeleBot(TG_BOT.token)

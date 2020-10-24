@@ -1,16 +1,16 @@
 from datetime import datetime
 
 from django.utils import timezone
+from loguru import logger
 
 from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
 from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup, Reminder
-from django.conf import settings
 
 TASKS_TYPES = tuple([x[0] for x in DAILY_TASK_TYPE])
-log = settings.LOGGER
+log = logger.bind(task="app")
 
 
 def get_tasks(day: int):
@@ -121,7 +121,9 @@ def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
     # TODO сделать функцию вызываемой для одного человека
     # TODO формируемая инфа для кнопок слишком длинная
+    log.info("Starting to collect the report of selected tasks")
     for subscriber in Subscriber.objects.filter(is_active=True):
+        log.info(f"send report blank to {subscriber.tg_chat_id}")
         today = timezone.now().date()
         if subscriber.day == 1:
             text = "Ну что, по основным моментам мы с тобой прошлись. Если остались вопросы, " \
