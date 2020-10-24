@@ -110,28 +110,28 @@ def ask_single_task(tasks_list):
     text = task_record.task.text
     buttons = [
         (
-            ('Да', f'set_to_done({task_record.pk},True,{tasks_id_list})'),
-            ('Нет', f'set_to_done({task_record.pk},False,{tasks_id_list})')
+            ('Да', f'settodone({task_record.pk},True,{tasks_id_list})'.replace(" ", "")),
+            ('Нет', f'settodone({task_record.pk},False,{tasks_id_list})'.replace(" ", ""))
         )
     ]
     return text, InlineKeyboard(buttons).keyboard
 
-        
+
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
-    log.info("Starting to collect the report of selected tasks")
+    # TODO сделать функцию вызываемой для одного человека
+    # TODO формируемая инфа для кнопок слишком длинная
     for subscriber in Subscriber.objects.filter(is_active=True):
-        log.info(f"send report blank to {subscriber.tg_chat_id}")
         today = timezone.now().date()
         if subscriber.day == 1:
             text = "Ну что, по основным моментам мы с тобой прошлись. Если остались вопросы, " \
                    "то задавай их в нашем Telegam чате tg://join?invite=AAAAAEaDF5qIQRwLVR59cQ " \
                    "или на странице в Инстаграм @iman.club На этом все, ты выполняй задания, " \
                    "я буду их анализировать и через месяц покажу на сколько ты прибавил в " \
-                   "каждом пункте своего развития. Алга, брат! Бисмиллях! "
+                   "каждом пункте своего развития. Алга, брат! Бисмиллях!\n\n"
         else:
             text = "И снова, Ас-саляму ‘алейкум, брат! Как прошел день? Что из запланированного получилось сделать? " \
-                   "Поделись со мной и я внесу твой результат в наш отчет. "
+                   "Поделись со мной и я внесу твой результат в наш отчет.\n\n"
         tasks = [
             x.pk for x in
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
