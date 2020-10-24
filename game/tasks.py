@@ -19,7 +19,7 @@ def celery_send_daily_tasks():
     send_daily_tasks()
 
 
-@periodic_task(run_every=(crontab(hour=21, minute=0)), name='ask_about_task')
+@periodic_task(run_every=(crontab(hour=9, minute=5)), name='ask_about_task')
 def send_list_with_selected_tasks_task():
     """Рассылает список заданий"""
     send_list_with_selected_tasks()
