@@ -14,7 +14,7 @@ from bot_init.service import get_subscriber_by_chat_id, get_tbot_instance
 from game.models import RecordDailyTask
 from game.services.plots import create_statistic_plot
 
-log = logger.bind(task="app")
+log = logger.bind(task="statistic")
 
 
 def get_tasks_per_period(subscriber: Subscriber, period):
@@ -35,7 +35,10 @@ def get_tasks_per_period(subscriber: Subscriber, period):
 def get_previous_month_result(subscriber: Subscriber):
     start_body = subscriber.points_body
     start_soul = subscriber.points_soul
-    start_spirit = subscriber.points_body
+    start_spirit = subscriber.points_spirit
+    log.info(
+        f"values on db: body = {start_body}; soul = {start_soul}; spirit = {start_spirit}"
+    )
     return start_body * 10, start_soul * 10, start_spirit * 10
 
 
@@ -116,7 +119,7 @@ def get_nafs_value(subscriber, period):
 
 def make_statistic(chat_id: int, period):
     subscriber = get_subscriber_by_chat_id(chat_id)
-    log.info(f"make statistic for subscriber - {chat_id}")
+    log.info(f"MAKE STATISTIC FOR SUBSCRIBER - {chat_id}")
     start_body, start_soul, start_spirit = get_previous_month_result(subscriber)
     diff_body, diff_soul, diff_spirit = get_plus_per_period(
         subscriber, period
@@ -130,8 +133,12 @@ def make_statistic(chat_id: int, period):
         (start_spirit + diff_body - minuses[2]) / 10
     ]
     nafs_value = get_nafs_value(subscriber, period)
-    image = create_statistic_plot(start_means, end_means)
-    log.info(f"end of making statistic for subscriber - {chat_id}")
+    from random import randint
+    image = create_statistic_plot(
+        [randint(20, 100) for _ in range(3)], 
+        [randint(20, 100) for _ in range(3)]
+    )
+    log.info(f"END OF MAKING STATISTIC FOR SUBSCRIBER - {chat_id}")
     tbot = get_tbot_instance()
     tbot.send_photo(chat_id, image, caption=f'Нафс {nafs_value}')
 

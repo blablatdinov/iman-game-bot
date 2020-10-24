@@ -1,6 +1,5 @@
-from __future__ import absolute_import, unicode_literals
-
 from datetime import timedelta, date
+from __future__ import absolute_import, unicode_literals
 
 from celery.task import periodic_task
 from celery.schedules import crontab
@@ -8,6 +7,8 @@ from celery.schedules import crontab
 from bot_init.models import Subscriber
 from game.service import send_daily_tasks, ask_about_task, send_reminders, clean_messages, send_list_with_selected_tasks
 from game.services.statistic import make_statistic_by_month, make_statistic_by_two_week
+
+log = logger.bind(task="app")
 
 
 @periodic_task(run_every=(crontab(hour=0, minute=0)), name='send_daily_tasks')
