@@ -4,6 +4,7 @@ from collections import namedtuple
 from dotenv import load_dotenv
 import requests
 from requests.exceptions import ConnectionError
+from loguru import logger
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv('.env')
@@ -107,3 +108,6 @@ CELERY_BROKER_URL = 'redis://localhost:6379/1'
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASKS_SERIALIZER = 'json'
+
+LOGGER = logger.bind(task="app")
+logger.add(f"{BASE_DIR}/logs/app.log", filter=lambda record: record["extra"]["task"] == "app")

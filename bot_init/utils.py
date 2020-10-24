@@ -11,8 +11,6 @@ def save_message(msg, message_key=None):
     message_id = msg.message_id
     chat_id = msg.chat.id
     text = msg.text
-    print("saving message")
-    print(message_key)
     try:
         json_str = msg.json
     except:

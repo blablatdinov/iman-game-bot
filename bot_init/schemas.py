@@ -1,5 +1,11 @@
 # TODO жирные методы
+from loguru import logger
+from django.conf import settings
+
 from bot_init.markup import get_default_keyboard
+
+log = logger.bind(task="write_out_data")
+logger.add(f"{settings.BASE_DIR}/logs/out_data.log", filter=lambda record: record["extra"]["task"] == "write_out_data")
 
 
 class Answer:
@@ -27,8 +33,10 @@ class Answer:
             if self.keyboard:
                 message = tbot.send_message(chat_id=chat_id, text=self.text, reply_markup=self.keyboard, parse_mode="HTML")
                 save_message(message, message_key=self.message_key)
+                log.info(str(message))
                 return
             message = tbot.send_message(chat_id=chat_id, text=self.text, parse_mode="HTML")
+            log.info(str(message))
             save_message(message, message_key=self.message_key)
         except Exception as e:
             print(e)
@@ -50,8 +58,10 @@ class Answer:
                     reply_markup=self.keyboard, 
                     parse_mode="HTML"
                 )
+                log.info(str(message))
                 return
             message = tbot.send_message(chat_id=chat_id, text=self.text, parse_mode="HTML")
+            log.info(str(message))
             save_message(message)
         except Exception as e:
             print(e)

@@ -7,8 +7,10 @@ from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
 from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup, Reminder
+from django.conf import settings
 
 TASKS_TYPES = tuple([x[0] for x in DAILY_TASK_TYPE])
+log = settings.LOGGER
 
 
 def get_tasks(day: int):
@@ -117,7 +119,9 @@ def ask_single_task(tasks_list):
         
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
+    log.info("Starting to collect the report of selected tasks")
     for subscriber in Subscriber.objects.filter(is_active=True):
+        log.info(f"send report blank to {subscriber.tg_chat_id}")
         today = timezone.now().date()
         if subscriber.day == 1:
             text = "Ну что, по основным моментам мы с тобой прошлись. Если остались вопросы, " \
@@ -133,6 +137,7 @@ def ask_about_task():
             RecordDailyTask.objects.filter(subscriber=subscriber, date=today, is_selected=True)
         ]
         if len(tasks) < 1:
+            log.info(f"{subscriber.tg_chat_id} no select task")
             continue
         task_text, keyboard = ask_single_task(tasks)
         Answer(text + task_text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ask_about_tasks").send()
@@ -155,11 +160,12 @@ def clean_ask():
 
 
 def clean_messages(key):
+    log.info(f"cleaning message with key - {key}")
     queryset = Message.objects.filter(key=key)
-    print(queryset)
     for message in queryset:
         try:
             message.tg_delete()
+            log.info(f"delete message id - {message.message_id}")
         except Exception as e:
             print(e)
 
@@ -168,6 +174,7 @@ def send_reminders():
     for subscriber in Subscriber.objects.filter(is_active=True):
         reminder_text = Reminder.objects.all().order_by("?")[0].text
         Answer(reminder_text).send(subscriber.tg_chat_id)
+        log.info(f"Send reminders {reminder_text} to {subscriber.tg_chat_id}")
 
 
 def send_list_with_selected_tasks():
@@ -184,6 +191,7 @@ def send_list_with_selected_tasks():
             )
             for i, st in enumerate(tasks.filter(subscriber=subscriber, is_selected=True)):
                 text += f"{i + 1}. {st.task.text} ({st.task.get_task_type_display()})\n"
+            log.info(f"Send list of tasks ({text}) to {subscriber.tg_chat_id}")
             Answer(text=text).send(subscriber.tg_chat_id)
         except Exception as e:
-            ...
+            log.error(str(e))
