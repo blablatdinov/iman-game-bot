@@ -1,16 +1,16 @@
 from datetime import datetime
 
 from django.utils import timezone
+from loguru import logger
 
 from bot_init.models import Subscriber, Message
 from bot_init.markup import InlineKeyboard
 from bot_init.schemas import Answer
 from game.schemas import DAILY_TASK_TYPE, WEEK_DAYS
 from game.models import DailyTask, RecordDailyTask, RecordDailyTaskGroup, Reminder
-from django.conf import settings
 
 TASKS_TYPES = tuple([x[0] for x in DAILY_TASK_TYPE])
-log = settings.LOGGER
+log = logger.bind(task="app")
 
 
 def get_tasks(day: int):

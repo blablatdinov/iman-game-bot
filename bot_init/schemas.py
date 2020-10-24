@@ -1,11 +1,9 @@
 # TODO жирные методы
 from loguru import logger
-from django.conf import settings
 
 from bot_init.markup import get_default_keyboard
 
 log = logger.bind(task="write_out_data")
-logger.add(f"{settings.BASE_DIR}/logs/out_data.log", filter=lambda record: record["extra"]["task"] == "write_out_data")
 
 
 class Answer:
