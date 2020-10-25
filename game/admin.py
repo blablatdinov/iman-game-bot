@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from game.models import MembersGroup, DailyTask, RecordDailyTask, BeginSurveyQuestion
+from game.models import MembersGroup, DailyTask, RecordDailyTask, BeginSurveyQuestion, Reminder
 
 
 @admin.register(BeginSurveyQuestion)
@@ -29,6 +29,7 @@ class DailyTaskAdmin(admin.ModelAdmin):
 @admin.register(RecordDailyTask)
 class RecordDailyTaskAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "subscriber",
         "task",
         "is_done",
@@ -47,3 +48,6 @@ class RecordDailyTaskAdmin(admin.ModelAdmin):
 
     task_type.short_description = "Тип задания"
 
+@admin.register(Reminder)
+class ReminderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'text')
