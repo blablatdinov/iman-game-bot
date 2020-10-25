@@ -85,7 +85,7 @@ def text_message_service(chat_id: int, text: str):
 def handle_query_service(chat_id: int, text: str, message_id: int, message_text: str, call_id: int):
     """Обработка нажатий на inline кнопку"""
     # TODO побить функцию
-    logger.info(f"{chat_id=} {text}")
+    log.info(f"{chat_id=} {text}")
     TIME_LIMITS_FOR_SELECT_TASKS = (0, 8)
     print((timezone.now().hour + 3) % 24)
     if "set_to_selected" in text and TIME_LIMITS_FOR_SELECT_TASKS[0] <= (timezone.now().hour + 3) % 24 <= TIME_LIMITS_FOR_SELECT_TASKS[1]:
