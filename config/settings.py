@@ -103,6 +103,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 TG_BOT = namedtuple('Bot', ['token', 'webhook_host', 'name', 'id'])
 TG_BOT.token = os.getenv('BOT_TOKEN')
 TG_BOT.webhook_host = os.getenv('HOST')
