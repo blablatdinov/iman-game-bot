@@ -35,7 +35,7 @@ def get_random_tasks():
 def selected_or_no(task_pk, level):
     record_daily_task = RecordDailyTask.objects.get(pk=task_pk)
     if record_daily_task.complexity == level:
-        return "⛏️"
+        return "💪"
     return ""
 
 
