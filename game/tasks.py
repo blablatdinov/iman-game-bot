@@ -10,7 +10,7 @@ from game.service import send_daily_tasks, ask_about_task, send_reminders, clean
 from game.services.statistic import make_statistic_by_month, make_statistic_by_two_week
 
 
-@periodic_task(run_every=(crontab(hour=0, minute=0)), name='send_daily_tasks')
+@periodic_task(run_every=(crontab(hour=0, minute=0)), name='send_daily_tasks 0:00')
 def celery_send_daily_tasks():
     """
     Рассылка ежедневных задания пользователю
@@ -19,13 +19,13 @@ def celery_send_daily_tasks():
     send_daily_tasks()
 
 
-@periodic_task(run_every=(crontab(hour=9, minute=5)), name='ask_about_task')
+@periodic_task(run_every=(crontab(hour=9, minute=5)), name='send_list_with_selected_tasks_task 9:05')
 def send_list_with_selected_tasks_task():
     """Рассылает список заданий"""
     send_list_with_selected_tasks()
 
 
-@periodic_task(run_every=(crontab(hour=21, minute=0)), name='ask_about_task')
+@periodic_task(run_every=(crontab(hour=21, minute=0)), name='ask_about_task 21:00')
 def celery_ask_about_task():
     """
     Рассылка вопросов о выполнении ежедневных заданий
@@ -34,7 +34,7 @@ def celery_ask_about_task():
     ask_about_task()
 
 
-@periodic_task(run_every=(crontab(hour=0, minute=0)), name='clean_asks')
+@periodic_task(run_every=(crontab(hour=0, minute=0)), name='clean_asks 0:00')
 def celery_clean_ask():
     """
     Удалить вопросы о выполнении ежедневных заданий
@@ -43,7 +43,7 @@ def celery_clean_ask():
     clean_messages("ask_about_tasks")
 
 
-@periodic_task(run_every=(crontab(hour=16, minute=0)), name='send_reminders')
+@periodic_task(run_every=(crontab(hour=16, minute=0)), name='send_reminders 16:00')
 def send_reminders_task():
     """
     Отправить напоминания
@@ -52,7 +52,7 @@ def send_reminders_task():
     send_reminders()
 
 
-@periodic_task(run_every=(crontab(hour=14, minute=0)), name='check_statistic_time')
+@periodic_task(run_every=(crontab(hour=14, minute=0)), name='check_statistic_time 14:00')
 def check_statistic_time_task():
     """
     Таска проверяет всех подписчиков на наступление 14 или 30 дней

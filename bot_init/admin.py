@@ -27,3 +27,7 @@ class AdminMessageAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.key = obj.key.lower().replace(' ', '_')
         obj.save()
+
+
+admin.site.site_title = 'Iman game bot. Панель управления'
+admin.site.site_header = 'Iman game bot. Панель управления'
