@@ -2,8 +2,10 @@
 from loguru import logger
 
 from bot_init.markup import get_default_keyboard
+from bot_init.utils import get_tbot_instance
 
 log = logger.bind(task="write_out_data")
+tbot = get_tbot_instance()
 
 
 class Answer:
@@ -20,7 +22,6 @@ class Answer:
         self.message_key = message_key
 
     def send(self, chat_id: int = None):
-        from bot_init.service import get_tbot_instance
         from bot_init.utils import save_message
         if chat_id is None:
             chat_id = self.chat_id
@@ -40,7 +41,6 @@ class Answer:
             print(e)
 
     def edit(self, message_id: int, chat_id: int = None):
-        from bot_init.service import get_tbot_instance
         from bot_init.utils import save_message
         if chat_id is None:
             chat_id = self.chat_id

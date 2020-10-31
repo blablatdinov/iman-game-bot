@@ -44,11 +44,6 @@ def registration_subscriber(chat_id: int, text: str) -> Answer:
     return Answer("Вы уже зарегистрированы")
 
 
-def get_tbot_instance() -> TeleBot:
-    """Получить объект для взаимодействия с api телеграма"""
-    return TeleBot(settings.TG_BOT.token)
-
-
 def update_webhook(host: str = f'{settings.TG_BOT.webhook_host}/{settings.TG_BOT.token}'):
     """Обновляем webhook"""
     tbot = get_tbot_instance()
