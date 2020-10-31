@@ -7,7 +7,7 @@ from game.models import MembersGroup
 class Subscriber(models.Model):
     """ Модель подписчика бота """
     tg_chat_id = models.IntegerField(verbose_name="Идентификатор подписчика")
-    is_active = models.BooleanField(default=True, verbose_name="Подписан ли польователь на бота")
+    is_active = models.BooleanField(default=False, verbose_name="Подписан ли польователь на бота")
     comment = models.TextField(blank=True, null=True, verbose_name="Комментарй к подписчику")
     members_group = models.ForeignKey(
         MembersGroup, on_delete=models.CASCADE, related_name='subscribers',

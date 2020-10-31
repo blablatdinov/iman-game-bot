@@ -36,8 +36,10 @@ def registration_subscriber(chat_id: int, text: str) -> Answer:
         members_group = MembersGroup.objects.get(pk=pk)
     except ValueError:
         return Answer("Получите ссылку-приглашение для вашей команды")
-    _, created = Subscriber.objects.get_or_create(is_active=False, tg_chat_id=chat_id, members_group=members_group)
+    subscriber, created = Subscriber.objects.get_or_create(tg_chat_id=chat_id)
     if created:
+        subscriber.members_group = members_group
+        subscriber.save()
         text = AdminMessage.objects.get(key='start').text
         keyboard = get_acquaintance_next_keyboard(1)
         return Answer(text, keyboard=keyboard)
