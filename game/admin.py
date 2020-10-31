@@ -38,10 +38,8 @@ class RecordDailyTaskAdmin(admin.ModelAdmin):
         "complexity",
         "task_type",
     )
-    list_editable = ('is_done',)
-
-    def get_queryset(self, request):
-        return self.model.objects.filter(is_selected=True)
+    list_editable = ('is_done','is_selected')
+    list_per_page = 300
 
     def task_type(self, obj):
         return obj.task.get_task_type_display()
