@@ -65,5 +65,5 @@ class AdminMessage(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'Админитративное сообщение'
-        verbose_name_plural = 'Админитративное сообщения'
+        verbose_name = 'Административное сообщение'
+        verbose_name_plural = 'Административные сообщения'
