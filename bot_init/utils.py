@@ -1,7 +1,11 @@
-from datetime import datetime
-from django.utils.timezone import make_aware
-from bot_init.models import Message
 import json
+from datetime import datetime
+
+from django.utils.timezone import make_aware
+from django.conf import settings
+from telebot import TeleBot
+
+from bot_init.models import Message
 
 
 def save_message(msg, message_key=None):
@@ -21,3 +25,9 @@ def save_message(msg, message_key=None):
         chat_id=chat_id, text=text, json=json_text, key=message_key
     )
     return message_instance
+
+
+def get_tbot_instance() -> TeleBot:
+    """Получить объект для взаимодействия с api телеграма"""
+    return TeleBot(settings.TG_BOT.token)
+

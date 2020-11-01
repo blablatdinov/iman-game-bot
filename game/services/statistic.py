@@ -10,7 +10,8 @@ import numpy as np
 from loguru import logger
 
 from bot_init.models import Subscriber
-from bot_init.service import get_subscriber_by_chat_id, get_tbot_instance
+from bot_init.service import get_subscriber_by_chat_id
+from bot_init.utils import get_tbot_instance
 from game.models import RecordDailyTask
 
 
