@@ -27,7 +27,6 @@ class Answer:
             chat_id = self.chat_id
         if chat_id is None:
             raise Exception("Не передан идентификатор чата")
-        tbot = get_tbot_instance()
         try:
             if self.keyboard:
                 message = tbot.send_message(chat_id=chat_id, text=self.text, reply_markup=self.keyboard, parse_mode="HTML")
@@ -46,7 +45,6 @@ class Answer:
             chat_id = self.chat_id
         if chat_id is None:
             raise Exception("Не передан идентификатор чата")
-        tbot = get_tbot_instance()
         try:
             if self.keyboard:
                 message = tbot.edit_message_text(
