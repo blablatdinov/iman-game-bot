@@ -38,8 +38,9 @@ class RecordDailyTaskAdmin(admin.ModelAdmin):
         "complexity",
         "task_type",
     )
-    list_editable = ('is_done','is_selected')
+    list_editable = ('is_done', 'is_selected')
     list_per_page = 300
+    search_fields = ("subscriber__tg_chat_id",)
 
     def task_type(self, obj):
         return obj.task.get_task_type_display()
