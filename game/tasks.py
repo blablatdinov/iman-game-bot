@@ -58,6 +58,7 @@ def check_statistic_time_task():
     Таска проверяет всех подписчиков на наступление 14 или 30 дней
 
     """
+    exit()
     for subscriber in Subscriber.objects.filter(is_active=True):
         if subscriber.registry_date + timedelta(days=30) == date.today():
             make_statistic_by_month(subscriber.tg_chat_id)
