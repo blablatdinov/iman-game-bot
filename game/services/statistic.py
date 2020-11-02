@@ -152,9 +152,11 @@ def make_statistic(chat_id: int, period):
     log.debug(f"{end_means=}")
     nafs_value = get_nafs_value(subscriber, period)
     image = get_plot(start_means, end_means)
-    tbot = get_tbot_instance()
     # 125821629
-    tbot.send_photo(358610865, image, caption=f'Нафс {nafs_value}')
+    try:
+        tbot.send_photo(chat_id, image, caption=f'Воспитание нафса - {round(nafs_value / 10, 1)}')
+    except Exception as e:
+        print(e)
 
 
 def make_statistic_by_two_week(chat_id):
