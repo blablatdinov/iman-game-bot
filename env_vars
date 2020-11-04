@@ -1,0 +1,10 @@
+DEBUG=  # true or false
+SECRET_KEY=
+BOT_TOKEN=
+HOST=
+
+# Опционально, если при разработке используется БД Postgres
+
+DB_NAME=
+DB_USERNAME=
+DB_PASSWORD=
