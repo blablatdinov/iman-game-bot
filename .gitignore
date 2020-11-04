@@ -1,4 +1,4 @@
-i# Created by https://www.gitignore.io
+# Created by https://www.gitignore.io
 
 ### OSX ###
 .DS_Store
@@ -80,6 +80,14 @@ docs/_build/
 # PyBuilder
 target/
 
+# gzip files
+*.gz
+
+# tmp files
+tmp.*
+
+# json files
+*.json
 
 ### Django ###
 *.log
