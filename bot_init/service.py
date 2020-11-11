@@ -8,6 +8,7 @@ from loguru import logger
 
 from bot_init.models import Subscriber, AdminMessage
 from bot_init.schemas import Answer
+from bot_init.utils import get_tbot_instance
 from bot_init.markup import get_default_keyboard, InlineKeyboard
 from game.models import MembersGroup, RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, ask_single_task
