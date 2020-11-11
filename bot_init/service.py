@@ -14,6 +14,7 @@ from game.service import translate_tasks_in_keyboard, ask_single_task
 from game.services.survey import get_next_question, set_points, start_survey
 
 log = logger.bind(task="app")
+tbot = get_tbot_instance()
 
 
 def get_primary_key_from_start_message(text: str) -> int:
@@ -187,5 +188,5 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
 
 def tg_delete_message(chat_id, message_id):
     """Удалить сообщение в телеграм"""
-    get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)
+    tbot.delete_message(chat_id=chat_id, message_id=message_id)
     log.info(f"delete message (id: {message_id}, chat_id: {chat_id}")
