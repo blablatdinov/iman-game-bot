@@ -152,7 +152,7 @@ def clean_ask():
 
     """
     queryset = Message.objects.filter(
-        is_removed=False, text__contains="Время заполнить отчет по заданиям, которые ты выбрал"
+        is_removed=False, key="ask_about_tasks"
     )
     for message in queryset:
         try:
