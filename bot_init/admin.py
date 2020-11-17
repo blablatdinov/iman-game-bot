@@ -4,9 +4,15 @@ from django.conf import settings
 from bot_init.models import Message, Subscriber, AdminMessage
 
 
+# TODO вынести действия в отдельный модуль
 def activate_subscrbiers(modeladmin, request, queryset):
     queryset.update(is_active=True)
 activate_subscrbiers.short_description = "Активировать пользвоателей"
+
+
+def deactivate_subscrbiers(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+activate_subscrbiers.short_description = "Деактивировать пользвоателей"
 
 
 @admin.register(Message)
@@ -18,7 +24,7 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):
     list_display = ('tg_chat_id', 'is_active', 'registry_date', 'day')
-    actions = [activate_subscrbiers]
+    actions = [activate_subscrbiers, deactivate_subscrbiers]
 
 
 @admin.register(AdminMessage)
