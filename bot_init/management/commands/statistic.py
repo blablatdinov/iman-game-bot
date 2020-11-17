@@ -9,4 +9,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for sub in Subscriber.objects.filter(is_active=True):
+            #make_statistic_by_month(sub.tg_chat_id)
             make_statistic_by_two_week(sub.tg_chat_id)

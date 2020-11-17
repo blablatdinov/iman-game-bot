@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
 from bot_init.models import Subscriber
+from bot_init.utils import save_message
 from bot_init.service import get_subscriber_by_chat_id, get_tbot_instance
 from game.models import RecordDailyTask
 from math import cos, sin, pi
@@ -154,9 +155,10 @@ def make_statistic(chat_id: int, period):
     image = get_plot(start_means, end_means)
     # 125821629
     try:
-        tbot.send_photo(chat_id, image, caption=f'Воспитание нафса - {round(nafs_value / 10, 1)}')
+        msg = tbot.send_photo(chat_id, image, caption=f'Воспитание нафса - {round(nafs_value / 10, 1)}')
+        save_message(msg)
     except Exception as e:
-        print(e)
+        log.error(e)
 
 
 def make_statistic_by_two_week(chat_id):
@@ -166,7 +168,7 @@ def make_statistic_by_two_week(chat_id):
         # subscriber.registry_date,
         # subscriber.registry_date + timedelta(14)
         datetime(2020, 10, 20),
-        datetime(2020, 11, 3),
+        datetime(2020, 11, 17),
     )
     make_statistic(chat_id, period)
 
@@ -174,8 +176,12 @@ def make_statistic_by_two_week(chat_id):
 def make_statistic_by_month(chat_id):
     subscriber = get_subscriber_by_chat_id(chat_id)
     period = (
-        subscriber.registry_date,
-        subscriber.registry_date + timedelta(30)
+        #subscriber.registry_date,
+        #subscriber.registry_date + timedelta(30)
+
+        #datetime(2020, 10, 20),
+        datetime(2020, 11, 3),
+        datetime(2020, 11, 17),
     )
     make_statistic(chat_id, period)
 
