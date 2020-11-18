@@ -21,9 +21,10 @@ class PointsRecord(models.Model):  # TODO возможно следует убр
 
 class DailyTask(models.Model):
     """Задания, приходящие с утра на выполнение"""
-    task_type = models.CharField(max_length=16, choices=DAILY_TASK_TYPE)
-    text = models.TextField()
-    week_day = models.CharField(max_length=5, choices=WEEK_DAYS)
+    task_type = models.CharField(max_length=16, choices=DAILY_TASK_TYPE, verbose_name="Категория")
+    text = models.TextField(verbose_name="Текст")
+    week_day = models.CharField(max_length=5, choices=WEEK_DAYS, verbose_name="День недели")
+    image = models.ImageField(upload_to="task_images", blank=True, null=True, verbose_name="Изображение")
 
     def __str__(self):
         return self.text
