@@ -57,7 +57,7 @@ class RecordDailyTask(models.Model):
         RecordDailyTaskGroup, on_delete=models.CASCADE, related_name="daily_tasks_records", verbose_name="Группа подписчиков"
     )
 
-    def switch(self):
+    def switch(self, complexity):  # FIXME зачем здесь complexity
         self.is_selected = not self.is_selected
         self.save()
 
