@@ -73,22 +73,18 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     if "set_to_selected" in text or "set_to_unselected" in text:
         record_daily_task_id, level = get_args(text)
         answer = set_task_to_selected_or_unselected(record_daily_task_id, level, chat_id)
-        return answer
     elif "set_to_done" in text or "settodone" in text:
         task_id, task_status, next_tasks_list = get_args(text)
         answer = set_task_to_done(
             task_id, task_status, next_tasks_list, chat_id, message_id
         )
-        return answer
     elif "begin_survey" in text:
         value, begin_question_pk = get_args(text)
         answer = begin_survey(value, begin_question_pk, chat_id)
-        return answer
     elif "acquaintance" in text:
         step_num = int(get_args(text))
-        acquaintance(chat_id, step_num)
+        answer = acquaintance(chat_id, step_num)
     elif "get_task_keyboard" in text:
         task_type, group_pk = get_args(text)
-        get_task_keyboard(chat_id, task_type, group_pk)
-
-
+        answer = get_task_keyboard(chat_id, task_type, group_pk)
+    return answer
