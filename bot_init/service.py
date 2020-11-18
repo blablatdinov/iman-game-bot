@@ -52,15 +52,6 @@ def update_webhook(host: str = f'{settings.TG_BOT.webhook_host}/{settings.TG_BOT
     return web
 
 
-def get_subscriber_by_chat_id(chat_id: int):
-    """Получить подписчика по идентификатору чата"""
-    try:
-        subscriber = Subscriber.objects.get(tg_chat_id=chat_id)
-        return subscriber
-    except Subscriber.DoesNotExist:
-        pass  # TODO что будем делать в этом случае
-
-
 def text_message_service(chat_id: int, text: str):
     """Обработка текстовых сообщений"""
     if text == '📈Статистика':
@@ -101,7 +92,3 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
         get_task_keyboard(chat_id, task_type, group_pk)
 
 
-def tg_delete_message(chat_id, message_id):
-    """Удалить сообщение в телеграм"""
-    get_tbot_instance().delete_message(chat_id=chat_id, message_id=message_id)
-    log.info(f"delete message (id: {message_id}, chat_id: {chat_id}")

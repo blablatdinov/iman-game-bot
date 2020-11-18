@@ -3,7 +3,7 @@ from django.utils import timezone
 from bot_init.markup import get_default_keyboard
 from bot_init.models import Subscriber, AdminMessage
 from bot_init.schemas import Answer
-from bot_init.service import tg_delete_message, get_acquaintance_next_keyboard, get_subscriber_by_chat_id
+from bot_init.utils import tg_delete_message, get_subscriber_by_chat_id
 from config.settings import TIME_LIMITS_FOR_SELECT_TASKS
 from game.models import RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, ask_single_task
@@ -46,6 +46,7 @@ def set_task_to_done(task_id, task_status, next_tasks_list, chat_id, message_id)
 
 
 def begin_survey(value, begin_question_pk, chat_id):
+    from bot_init.service import get_acquaintance_next_keyboard
     set_points(chat_id, begin_question_pk, value)
     if begin_question_pk == 30:
         admin_message = AdminMessage.objects.get(pk=3)
@@ -61,6 +62,7 @@ def begin_survey(value, begin_question_pk, chat_id):
 
 
 def acquaintance(chat_id, step_num):
+    from bot_init.service import get_acquaintance_next_keyboard
     if step_num == 5:
         admin_message = AdminMessage.objects.get(pk=step_num + 1)
         Answer(admin_message.text, keyboard=get_default_keyboard(), chat_id=chat_id).send()
