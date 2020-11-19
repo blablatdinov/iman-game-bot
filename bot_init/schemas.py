@@ -48,10 +48,10 @@ class Answer:
         try:
             if self.keyboard:
                 message = tbot.edit_message_text(
-                    chat_id=chat_id, 
+                    chat_id=chat_id,
                     message_id=message_id,
-                    text=self.text, 
-                    reply_markup=self.keyboard, 
+                    text=self.text,
+                    reply_markup=self.keyboard,
                     parse_mode="HTML"
                 )
                 log.info(str(message))
