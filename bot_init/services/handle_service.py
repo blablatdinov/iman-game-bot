@@ -1,4 +1,5 @@
 from django.utils import timezone
+from loguru import logger
 
 from bot_init.markup import get_default_keyboard
 from bot_init.models import Subscriber, AdminMessage
@@ -9,10 +10,13 @@ from game.models import RecordDailyTask, RecordDailyTaskGroup
 from game.service import translate_tasks_in_keyboard, ask_single_task
 from game.services.survey import set_points, get_next_question, start_survey
 
+log = logger.bind(task="app")
+
 
 def set_task_to_selected_or_unselected(record_daily_task_id, level, chat_id):
     record_daily_task = RecordDailyTask.objects.get(pk=record_daily_task_id)
     if not(TIME_LIMITS_FOR_SELECT_TASKS[0] <= (timezone.now().hour + 3) % 24 <= TIME_LIMITS_FOR_SELECT_TASKS[1]):
+        log.info("This time is not suitable for selecting a task")
         return
     record_task_group = record_daily_task.group
     task_type = record_daily_task.task.task_type
