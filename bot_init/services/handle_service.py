@@ -21,7 +21,7 @@ def set_task_to_selected_or_unselected(record_daily_task_id, level, chat_id):
     record_task_group = record_daily_task.group
     task_type = record_daily_task.task.task_type
     record_daily_task.switch(level)
-    tasks = record_task_group.daily_tasks_records.filter(task__task_type=task_type)
+    tasks = record_task_group.daily_tasks_records.filter(task__task_type=task_type).order_by("pk")
     # TODO выхардкодить индексы
     text = f"{tasks[0].task.get_task_type_display()}\n\n" \
            f"1) {tasks[0].task.text}\n" \

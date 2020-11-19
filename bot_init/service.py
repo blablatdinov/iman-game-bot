@@ -74,7 +74,7 @@ def handle_query_service(chat_id: int, text: str, message_id: int, message_text:
     if "set_to_selected" in text or "set_to_unselected" in text:
         record_daily_task_id, level = get_args(text)
         answer = set_task_to_selected_or_unselected(record_daily_task_id, level, chat_id)
-    elif "set_to_done" in text or "settodone" in text:
+    elif "std" in text or "settodone" in text:
         task_id, task_status, next_tasks_list = get_args(text)
         answer = set_task_to_done(
             task_id, task_status, next_tasks_list, chat_id, message_id
