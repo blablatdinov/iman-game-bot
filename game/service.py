@@ -99,7 +99,7 @@ def send_daily_tasks():
     text = get_text(tasks.filter(task_type="body"))
     for subscriber in Subscriber.objects.filter(is_active=True):  # TODO вынести итерацию в отдельную функцию, чтобы пользователю можно было отправлять индивидуально
         group = create_daily_task_records(subscriber, tasks)
-        body_tasks = group.daily_tasks_records.filter(task__task_type="body")
+        body_tasks = group.daily_tasks_records.filter(task__task_type="body").order_by("pk")
         keyboard = translate_tasks_in_keyboard(body_tasks)
         Answer(text, keyboard=keyboard, chat_id=subscriber.tg_chat_id, message_key="ques_tasks").send()
 
@@ -110,8 +110,8 @@ def ask_single_task(tasks_list):
     text = task_record.task.text
     buttons = [
         (
-            ('Да', f'settodone({task_record.pk},True,{tasks_id_list})'.replace(" ", "")),
-            ('Нет', f'settodone({task_record.pk},False,{tasks_id_list})'.replace(" ", ""))
+            ('Да', f'std({task_record.pk},True,{tasks_id_list})'.replace(" ", "")),
+            ('Нет', f'std({task_record.pk},False,{tasks_id_list})'.replace(" ", ""))
         )
     ]
     return text, InlineKeyboard(buttons).keyboard
@@ -120,7 +120,7 @@ def ask_single_task(tasks_list):
 def ask_about_task():
     """Функция рассылает вопросы о выполнении заданий"""
     # TODO сделать функцию вызываемой для одного человека
-    # TODO формируемая инфа для кнопок слишком длинная
+    # TODO текст можно засунуть в БД
     log.info("Starting to collect the report of selected tasks")
     for subscriber in Subscriber.objects.filter(is_active=True):
         log.info(f"send report blank to {subscriber.tg_chat_id}")
