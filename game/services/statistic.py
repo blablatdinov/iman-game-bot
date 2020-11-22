@@ -15,12 +15,13 @@ from bot_init.utils import get_tbot_instance
 from game.models import RecordDailyTask
 
 
-def get_tasks_per_period(subscriber: Subscriber, period):
+def get_tasks_per_period(subscriber: Subscriber, period):  # TODO поменять название ф-ии на get_doned_tasks_per_period
     start_date = period[0]
     end_date = period[1]
     queryset = RecordDailyTask.objects.filter(
         subscriber=subscriber,
         date__range=(start_date, end_date),
+        is_done=True
     )
     result = (
         queryset.filter(task__task_type="body"),
@@ -131,7 +132,6 @@ def get_minus_per_skips(subscriber: Subscriber, tasks):
             is_selected=True,
         ).count() >= 3:
             result[2] -= 1.5
-    print(result)
     return result
 
 
@@ -143,7 +143,6 @@ def get_nafs_value(subscriber, period):
         for task in group:
             logger.debug(task)
             logger.debug(task.complexity)
-            print()
             result += task.complexity
     return result
 
