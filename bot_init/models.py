@@ -1,7 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from loguru import logger
 
 from game.models import MembersGroup
+from django.conf import settings
+
+log = logger.bind(task="app")
 
 
 class Subscriber(models.Model):
@@ -46,6 +50,8 @@ class Message(models.Model):
 
     def tg_delete(self):
         from bot_init.utils import tg_delete_message
+        if self.from_user_id != settings.TG_BOT.id:
+            return
         tg_delete_message(self.chat_id, self.message_id)
         self.is_removed = True
         self.save()

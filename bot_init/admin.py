@@ -15,10 +15,17 @@ def deactivate_subscribers(modeladmin, request, queryset):
 deactivate_subscribers.short_description = "Деактивировать пользователей"
 
 
+def tg_delete_messages(modeladmin, request, queryset):
+    for message in queryset:
+        message.tg_delete()
+tg_delete_messages.short_description = "Удалить сообщения в телеграмм"
+
+
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ("id", "key", "chat_id", "text", "date")
     search_fields = ("text", "chat_id")
+    actions = [tg_delete_messages]
 
 
 @admin.register(Subscriber)
