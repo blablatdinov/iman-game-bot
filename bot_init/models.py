@@ -45,7 +45,7 @@ class Message(models.Model):
     # TODO добавить __str__ метод
 
     def tg_delete(self):
-        from bot_init.service import tg_delete_message
+        from bot_init.utils import tg_delete_message
         tg_delete_message(self.chat_id, self.message_id)
         self.is_removed = True
         self.save()
