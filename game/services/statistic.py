@@ -26,6 +26,7 @@ def get_tasks_per_period(subscriber: Subscriber, period):
         subscriber=subscriber,
         date__range=(start_date, end_date),
         is_selected=True,
+        is_done=True,
     )
     result = (
         queryset.filter(task__task_type="body"),
@@ -154,6 +155,7 @@ def make_statistic(chat_id: int, period):
     nafs_value = get_nafs_value(subscriber, period)
     image = get_plot(start_means, end_means)
     # 125821629
+    #chat_id = 358610865
     try:
         msg = tbot.send_photo(chat_id, image, caption=f'Воспитание нафса - {round(nafs_value / 10, 1)}')
         save_message(msg)
@@ -167,8 +169,8 @@ def make_statistic_by_two_week(chat_id):
     period = (
         # subscriber.registry_date,
         # subscriber.registry_date + timedelta(14)
-        datetime(2020, 10, 20),
-        datetime(2020, 11, 17),
+        datetime(2020, 11, 23),
+        datetime(2020, 11, 23) + timedelta(30),
     )
     make_statistic(chat_id, period)
 
